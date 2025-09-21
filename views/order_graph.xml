@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+  <record id="view_assistec_order_graph" model="ir.ui.view">
+    <field name="name">assistec.order.graph</field>
+    <field name="model">assistec.order</field>
+    <field name="type">graph</field>          <!-- ❶ obrigatório -->
+    <field name="arch" type="xml">
+      <graph string="Ordens de Serviço - Gráfico"
+             type="bar"
+             stacked="True">
+        <field name="amount_total" type="measure"/>
+        <field name="stage_id"     type="row"/>
+        <field name="partner_city" type="col" optional="hide"/>
+      </graph>
+    </field>
+  </record>
+</data>
+</odoo>

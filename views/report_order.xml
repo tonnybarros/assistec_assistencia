@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ===================== TEMPLATES ===================== -->
+
+  <!-- TEMPLATE: Comprovante de ENTRADA (mesmo visual do seu HTML) -->
+  <template id="report_order_entry">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page">
+          <style>
+            html, body { margin:0; padding:0; }
+            @page { size: A4; margin: 10mm; }
+            .assistec-a4 { width: 210mm; margin: 0 auto; font-size: 12px; line-height: 1.2; }
+            .tbl { width:100%; border-collapse: collapse; table-layout: fixed; }
+            .tbl td, .tbl th { border:1px solid #000; padding:4px; vertical-align: top; word-wrap: break-word; }
+            .hdr { text-align:center; margin-bottom:4px; }
+            .num { text-align:center; font-weight:700; font-size:18px; }
+            .muted { color:#666; }
+            .labels { display:flex; gap:5px; margin-top:6px; }
+            .label { flex:1; border:1px solid #000; padding:6px; text-align:center; }
+            .label .os { font-size:16px; font-weight:700; }
+            .small { font-size:11px; }
+          </style>
+
+          <div class="assistec-a4">
+            <div class="hdr">
+              <!-- Cabeçalho (edita via Settings se quiser) -->
+              <t t-set="hdr" t-value="env['ir.config_parameter'].sudo().get_param('assistec.report_header_html')"/>
+              <t t-if="hdr"><t t-raw="hdr"/></t>
+              <t t-if="not hdr">
+                <t t-set="company" t-value="doc.company_id or env.company"/>
+                <div><b t-esc="company.display_name"/></div>
+                <div class="small muted">
+                  <t t-esc="company.street or ''"/>
+                  <t t-if="company.city"> - <t t-esc="company.city"/></t>
+                  <t t-if="company.state_id"> - <t t-esc="company.state_id.code"/></t>
+                  <t t-if="company.zip"> - CEP: <t t-esc="company.zip"/></t>
+                </div>
+                <div class="small muted">
+                  <t t-if="company.phone">Tel: <t t-esc="company.phone"/> </t>
+                  <t t-if="company.email">• <t t-esc="company.email"/></t>
+                </div>
+              </t>
+            </div>
+
+            <table class="tbl">
+              <tr>
+                <td colspan="2"><div class="num">COMPROVANTE DE ENTRADA • N°: <t t-esc="doc.name"/></div></td>
+                <td style="width:30%; text-align:center;">
+                  <div class="small">Data de entrada</div>
+                  <div><t t-esc="format_datetime(doc.date_in)"/></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2"><b>Cliente:</b> <t t-esc="doc.partner_id.display_name"/></td>
+                <td><b>Celular:</b> <t t-esc="doc.partner_mobile"/></td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <b>Endereço:</b>
+                  <t t-esc="doc.partner_street"/> - <t t-esc="doc.partner_street2"/>
+                  - <t t-esc="doc.partner_city"/>
+                  <t t-if="doc.partner_state_id"> / <t t-esc="doc.partner_state_id.code"/></t>
+                  <t t-if="doc.partner_zip"> • CEP: <t t-esc="doc.partner_zip"/></t>
+                </td>
+              </tr>
+              <tr>
+                <td><b>Aparelho:</b> <t t-esc="doc.repair_product_id.display_name"/></td>
+                <td><b>Marca:</b> <t t-esc="doc.brand_id.display_name"/></td>
+                <td><b>Modelo:</b> <t t-esc="doc.model"/></td>
+              </tr>
+              <tr>
+                <td><b>Nº de Série:</b> <t t-esc="doc.serial_number"/></td>
+                <td><b>Cor:</b> <t t-esc="doc.color"/></td>
+                <td><b>Acessórios:</b> <t t-esc="doc.accessories"/></td>
+              </tr>
+              <tr>
+                <td colspan="2"><b>Defeito informado:</b> <t t-esc="doc.issue_description"/></td>
+                <td><b>Funcionário:</b> <t t-esc="doc.responsible_id.display_name"/></td>
+              </tr>
+            </table>
+
+            <div class="small" style="margin-top:6px;">
+              <t t-set="ftr" t-value="env['ir.config_parameter'].sudo().get_param('assistec.report_disclaimer_html')"/>
+              <t t-if="ftr"><t t-raw="ftr"/></t>
+              <t t-if="not ftr">
+                <p><b>LEIA COM ATENÇÃO:</b></p>
+                <ol>
+                  <li>Prazo de guarda: 90 dias após o orçamento. Após esse prazo poderá haver descarte/sucateamento sem ressarcimento.</li>
+                  <li>Sempre informe o número da OS ao entrar em contato.</li>
+                  <li>Para retirar o aparelho é necessário este comprovante ou documento do titular.</li>
+                </ol>
+              </t>
+            </div>
+
+            <t t-set="show_labels" t-value="env['ir.config_parameter'].sudo().get_param('assistec.report_show_labels','True') in ('1','true','True')"/>
+            <t t-if="show_labels">
+              <div class="labels">
+                <t t-foreach="[1,2,3,4,5]" t-as="i">
+                  <div class="label">
+                    <div class="os"><t t-esc="doc.name"/></div>
+                    <div><t t-esc="doc.partner_id.display_name"/></div>
+                    <div><t t-esc="doc.partner_mobile"/></div>
+                    <div class="small"><t t-esc="doc.model"/></div>
+                  </div>
+                </t>
+              </div>
+            </t>
+          </div>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- TEMPLATE: Comprovante de SAÍDA -->
+  <template id="report_order_exit">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page">
+          <style>
+            @page { size: A4; margin: 10mm; }
+            .assistec-a4 { width: 210mm; margin: 0 auto; font-size: 12px; line-height: 1.2; }
+            .tbl { width:100%; border-collapse: collapse; table-layout: fixed; }
+            .tbl td, .tbl th { border:1px solid #000; padding:4px; vertical-align: top; word-wrap: break-word; }
+            .hdr { text-align:center; margin-bottom:4px; }
+            .num { text-align:center; font-weight:700; font-size:18px; }
+            .small { font-size:11px; }
+          </style>
+
+          <div class="assistec-a4">
+            <div class="hdr">
+              <t t-set="hdr" t-value="env['ir.config_parameter'].sudo().get_param('assistec.report_head_]()

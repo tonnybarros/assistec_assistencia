@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_open_change_stage_wizard" model="ir.actions.act_window">
+            <field name="name">Alterar Etapa da OS</field>
+            <field name="res_model">assistec.order.change.stage.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+<record id="view_assistec_order_change_stage_wizard_form" model="ir.ui.view">
+    <field name="name">assistec.order.change.stage.wizard.form</field>
+    <field name="model">assistec.order.change.stage.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Alterar Situação da OS">
+            <field name="is_closed_order" invisible="1"/>
+            
+            <group hide="is_closed_order">
+                <field name="stage_id" nolabel="1" placeholder="Selecione a nova situação..."/>
+            </group>
+            
+            <div class="alert alert-info text-center" role="alert" hide="not is_closed_order">
+                Esta Ordem de Serviço está finalizada. A única ação possível é reabri-la.
+            </div>
+            
+            <footer>
+                <button name="action_reopen_order" type="object"
+                        string="Reabrir OS (Garantia/Nova)"
+                        hide="not is_closed_order" class="btn-primary"/>
+
+                <button name="action_confirm_stage" type="object"
+                        string="Confirmar"
+                        hide="is_closed_order" class="btn-primary"/>
+
+                <button string="Cancelar" special="cancel" class="btn-secondary"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+    </data>
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+  <record id="print_text_header" model="assistec.print.text">
+    <field name="name">Cabeçalho padrão</field>
+    <field name="code">header</field>
+    <field name="body_html">
+      <![CDATA[
+<b>POSTO AUTORIZADO TECTONNY</b><br/>
+Est Governador Leonel Brizola, 651 Palhada – Nova Iguaçu-RJ<br/>
+<b>LOJA MESQUITA</b> – Rua Hipólito, 742 – Vila Emil, Mesquita-RJ<br/>
+MARCAS AUTORIZADAS: Aiwa, Amvox, HQ, Mondial, Bomber e TRC.
+      ]]>
+    </field>
+  </record>
+
+  <record id="print_text_entry" model="assistec.print.text">
+    <field name="name">Aviso – Entrada</field>
+    <field name="code">entry_notice</field>
+    <field name="body_html">
+      <![CDATA[
+<b>LEIA COM ATENÇÃO:</b><br/>
+1- Retirada em até 90 dias após orçamento (Art. 1275/1278 CC). Após isso: taxa R$ 5,00/dia.<br/>
+2- Informe sempre o nº da OS.<br/>
+3- Dúvidas? Consulte-nos antes de aprovar/reprovar.<br/>
+Eu, &lt;b&gt;__CLIENTE__&lt;/b&gt;, concordo com as condições acima.
+      ]]>
+    </field>
+  </record>
+
+  <record id="print_text_exit" model="assistec.print.text">
+    <field name="name">Aviso – Saída</field>
+    <field name="code">exit_notice</field>
+    <field name="body_html">
+      <![CDATA[
+<b>SOBRE A GARANTIA DOS SERVIÇOS:</b><br/>
+1- Garantia de 90 dias contados da retirada.<br/>
+2- Cobre somente mão de obra e peças novas trocadas.<br/>
+3- Frete não incluso.<br/>
+4- Cancelada por reparos de terceiros, quedas, surtos, etc.<br/>
+<br/>
+<b>Observações importantes:</b>
+<ul>
+  <li>Peça em estoque: 48 h; RJ: 72 h; fora RJ: 7 dias.</li>
+  <li>Peça em falta: prazo indeterminado (retire o aparelho).</li>
+  <li>Visita de retirada: sem cobrança; outras podem ter taxa.</li>
+</ul>
+      ]]>
+    </field>
+  </record>
+</odoo>

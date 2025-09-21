@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Raiz -->
+    <menuitem id="menu_assistec_root"
+              name="Assistência"
+              action="action_assistec_dashboard_client"
+              sequence="10"/>
+    <record id="menu_assistec_root" model="ir.ui.menu">
+        <field name="web_icon">assistec_assistencia,static/description/icon.png</field>
+    </record>
+
+    <!-- Ordens de Serviço -->
+    <record id="action_assistec_order" model="ir.actions.act_window">
+        <field name="name">Ordens de Serviço</field>
+        <field name="res_model">assistec.order</field>
+        <field name="view_mode">list,form,calendar,kanban,graph</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">Crie sua primeira OS</p>
+        </field>
+    </record>
+    <menuitem id="menu_assistec_orders"
+              parent="menu_assistec_root"
+              name="Ordens de Serviço"
+              action="action_assistec_order"
+              sequence="20"/>
+
+    <!-- Financeiro (menu próprio, independente) -->
+    <menuitem id="menu_finance_root"
+              parent="menu_assistec_root"
+              name="Financeiro"
+              sequence="25"
+              groups="assistec_assistencia.group_assistec_finance"/>
+    <!-- ... submenus do financeiro vêm aqui ... -->
+
+    <!-- Comissão (menu próprio, independente) -->
+    <menuitem id="menu_assistec_commission_root"
+              name="Comissão"
+              parent="menu_assistec_root"
+              sequence="30"
+              groups="assistec_assistencia.group_assistec_commission"/>
+    <menuitem id="menu_assistec_commission_calc"
+              name="Gerar Comissões"
+              parent="menu_assistec_commission_root"
+              action="action_assistec_commission_wizard"
+              sequence="1"
+              groups="assistec_assistencia.group_assistec_commission"/>
+    <menuitem id="menu_assistec_commission_report"
+              name="Comissões Calculadas"
+              parent="menu_assistec_commission_root"
+              action="action_assistec_commission_report"
+              sequence="2"
+              groups="assistec_assistencia.group_assistec_commission"/>
+
+    <!-- Configuração -->
+    <menuitem id="menu_assistec_config"
+              parent="menu_assistec_root"
+              name="Configuração"
+              sequence="80"
+              groups="assistec_assistencia.group_assistec_config"/>
+
+    <!-- Serviços -->
+    <record id="action_assistec_services" model="ir.actions.act_window">
+        <field name="name">Serviços</field>
+        <field name="res_model">assistec.service</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_assistec_services"
+              parent="menu_assistec_config"
+              name="Serviços"
+              action="action_assistec_services"
+              sequence="50"
+              groups="assistec_assistencia.group_assistec_config"/>
+
+    <menuitem id="menu_assistec_parts" 
+              parent="menu_assistec_config"
+              name="Peças" 
+              action="action_assistec_parts" 
+              sequence="60"/>
+
+    <menuitem id="menu_assistec_stage" name="Situações"
+                parent="menu_assistec_config" 
+                action="action_assistec_stage" 
+                sequence="10"
+                groups="assistec_assistencia.group_assistec_config"/>
+    <menuitem id="menu_assistec_discount"
+                name="Descontos"
+                parent="menu_assistec_config"
+                action="action_assistec_discount"
+                sequence="20"
+                groups="assistec_assistencia.group_assistec_config"/>
+
+    <!-- Peças -->
+    <record id="action_assistec_repair_products" model="ir.actions.act_window">
+        <field name="name">Aparelhos</field>
+        <field name="res_model">assistec.repair.product</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_assistec_repair_products"
+              parent="menu_assistec_config"
+              name="Aparelhos"
+              action="action_assistec_repair_products"
+              sequence="40"
+              groups="assistec_assistencia.group_assistec_config"/>
+
+    <!-- Marcas -->
+    <record id="action_assistec_brands" model="ir.actions.act_window">
+        <field name="name">Marcas</field>
+        <field name="res_model">assistec.brand</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_assistec_brands"
+              parent="menu_assistec_config"
+              name="Marcas"
+              action="action_assistec_brands"
+              sequence="45"
+              groups="assistec_assistencia.group_assistec_config"/>
+
+    <!-- Configurações gerais -->
+    <record id="res_config_assistec_settings_action" model="ir.actions.act_window">
+        <field name="name">Configurações da Assistência</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'assistec_assistencia'}</field>
+    </record>
+    <menuitem id="menu_assistec_settings"
+              parent="menu_assistec_config"
+              name="Configurações"
+              action="res_config_assistec_settings_action"
+              sequence="80"
+              groups="assistec_assistencia.group_assistec_config"/>
+</odoo>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ALTERAR ETAPA -->
+  <record id="view_change_stage_wizard_form_change" model="ir.ui.view">
+    <field name="name">assistec.order.change.stage.wizard.form.change</field>
+    <field name="model">assistec.order.change.stage.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Alterar Situação da OS">
+        <group>
+          <field name="stage_id"
+                 placeholder="Selecione a nova situação..."
+                 domain="[('active','=',True),('mark_closed','=',False)]"
+                 options="{'no_create': True}"/>
+        </group>
+        <footer>
+          <button name="action_confirm_stage" type="object"
+                  string="Confirmar" class="btn-primary"/>
+          <!-- Agora abre o seletor de etapas de fechamento -->
+          <button name="action_open_close_selector" type="object"
+                  string="Encerrar OS" class="btn-secondary"/>
+          <button special="cancel" string="Cancelar"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- REABRIR -->
+  <record id="view_change_stage_wizard_form_reopen" model="ir.ui.view">
+    <field name="name">assistec.order.change.stage.wizard.form.reopen</field>
+    <field name="model">assistec.order.change.stage.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Alterar Situação da OS">
+        <group>
+          <separator string=""/>
+          <div class="alert alert-info">
+            Esta Ordem de Serviço está finalizada. A única ação possível é reabri-la.
+          </div>
+        </group>
+        <footer>
+          <button name="action_reopen_order" type="object"
+                  string="Reabrir OS (Garantia/Nova)" class="btn-primary"/>
+          <button special="cancel" string="Cancelar"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- NOVO: wizard para escolher etapa de fechamento -->
+  <record id="view_close_stage_wizard_form" model="ir.ui.view">
+    <field name="name">assistec.order.close.wizard.form</field>
+    <field name="model">assistec.order.close.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Encerrar OS"> 
+        <group>
+          <field name="close_stage_id"
+                 placeholder="Escolha a situação de fechamento"
+                 options="{'no_create': True}"/>
+                    <!-- CAMPO DE FORMA DE PAGAMENTO ADICIONADO AQUI -->
+          <field name="payment_method_id"
+                  options="{'no_create': True}"
+                  required="1"/>
+          <field name="note" placeholder="Motivo/observações (opcional)"/>
+        </group>
+        <footer>
+          <button name="action_apply_close" type="object"
+                  string="Encerrar" class="btn-primary"/>
+          <button special="cancel" string="Cancelar"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- Ações -->
+  <record id="action_open_change_stage_wizard" model="ir.actions.act_window">
+    <field name="name">Alterar Situação da OS</field>
+    <field name="res_model">assistec.order.change.stage.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_change_stage_wizard_form_change"/>
+    <field name="target">new</field>
+    <field name="context">{}</field>
+  </record>
+
+  <record id="action_open_reopen_wizard" model="ir.actions.act_window">
+    <field name="name">Reabrir OS</field>
+    <field name="res_model">assistec.order.change.stage.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_change_stage_wizard_form_reopen"/>
+    <field name="target">new</field>
+    <field name="context">{}</field>
+  </record>
+
+  <!-- NOVO: ação do seletor de fechamento -->
+  <record id="action_open_close_stage_wizard" model="ir.actions.act_window">
+    <field name="name">Encerrar OS</field>
+    <field name="res_model">assistec.order.close.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_close_stage_wizard_form"/>
+    <field name="target">new</field>
+    <field name="context">{}</field>
+  </record>
+
+</odoo>

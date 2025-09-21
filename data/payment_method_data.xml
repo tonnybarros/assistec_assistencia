@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      O atributo noupdate="1" é muito importante. Ele diz ao Odoo:
+      "Crie estes registros na primeira vez. Se o usuário os apagar ou
+      renomear depois, não os recrie nem os modifique em futuras
+      atualizações do módulo."
+    -->
+    <data noupdate="1">
+        <record id="payment_method_pix" model="assistec.payment.method">
+            <field name="name">Pix</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="payment_method_dinheiro" model="assistec.payment.method">
+            <field name="name">Dinheiro</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="payment_method_credito" model="assistec.payment.method">
+            <field name="name">Cartão de Crédito</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="payment_method_debito" model="assistec.payment.method">
+            <field name="name">Cartão de Débito</field>
+            <field name="sequence">40</field>
+        </record>
+    </data>
+</odoo>

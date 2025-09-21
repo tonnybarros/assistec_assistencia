@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+  <!-- Atualiza o menu raiz para ter ícone no App Switcher -->
+  <record id="menu_assistec_root" model="ir.ui.menu">
+    <field name="web_icon">assistec_assistencia,static/description/icon.png</field>
+  </record>
+</data>
+</odoo>

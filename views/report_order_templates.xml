@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- =============== TEMPLATE: ENTRADA =============== -->
+  <template id="report_order_entry">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <t t-set="title" t-value="'Comprovante de Entrada - OS %s' % docs[0].name"/>
+        <div class="page">
+          <style>
+            html,body{width:210mm;margin:0;padding:0;}
+            @page{size:A4;margin:10mm;}
+
+            /* tabela principal */
+            .tbl{
+                width:100%;
+                margin:0;
+                border-collapse:collapse;
+                table-layout:fixed;
+                font-size:12px;
+                line-height:1;
+            }
+            .tbl td,.tbl th{border:1px solid #000;padding:3px;vertical-align:top;word-wrap:break-word;}
+
+            .num{font-size:22px;font-weight:700;margin:0;}
+            .small{font-size:11px;}
+
+            /* etiquetas */
+            .labels{width:100%;margin:6px 0;display:flex;justify-content:space-between;gap:4px;}
+            .label{flex:1;border:1px solid #000;text-align:center;padding:4px;font-size:11px;}
+            .label .os{font-size:16px;font-weight:700;}
+
+            .cutline,.cut{border-top:1px dashed #000;margin:8px auto;text-align:center;font-size:10px;width:95%;}
+            .via{width:95%;margin:4px auto;page-break-inside:avoid;}
+            .via .title{text-align:center;font-weight:700;margin:4px 0;font-size:12px;}
+            .sign-row{display:flex;gap:10px;margin-top:10px;}
+            .sign{flex:1;border-top:1px solid #000;text-align:center;padding-top:3px;font-size:11px;}
+
+            .page{
+                /* se já existir, só acrescente esta linha */
+                padding-top:4mm;        /* ou 5 mm, se preferir */
+            }
+            /* só quebra se NÃO for a última “page” */
+            .page:last-child{
+                page-break-after: auto !important;
+            }
+
+            /* mantém a quebra quando houver mais de uma página */
+            .page:not(:last-child){
+                page-break-after: always;
+            }
+          </style>
+
+          <!-- Cabeçalho + QR -->
+          <table class="tbl">
+            <tr>
+              <td colspan="2" style="padding:3px; text-align:center;">
+                  <!-- aqui entra o seu texto vindo do editor -->
+                  <t t-set="param" t-value="env['ir.config_parameter'].sudo()"/>
+                  <t t-set="header_id"
+                      t-value="int(param.get_param('assistec.header_text_id') or 0)"/>
+                  <t t-if="header_id">
+                      <t t-raw="env['assistec.print.text'].browse(header_id).body_html"/>
+                  </t>
+              </td>
+              <td style="width:30%;text-align:center;padding:3px;">
+                <h3 class="num">Nº: <t t-esc="doc.name"/></h3>
+                <t t-if="doc.qr_code">
+                  <img t-att-src="'data:image/png;base64,%s' % ((doc.qr_code.decode() if isinstance(doc.qr_code, bytes) else doc.qr_code))"
+                       style="width:85px;height:85px;margin-top:4px;"/>
+                  <div class="small">Acompanhe on-line</div>
+                </t>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" style="padding:3px;text-align:center;">
+                  <b class="small">
+                      ATENDIMENTO
+                      <t t-if="doc.company_id.phone">
+                          <t t-esc="doc.company_id.phone"/>
+                      </t>
+                  </b>
+              </td>
+            </tr>
+
+            <!-- Dados cliente / aparelho -->
+            <tr><td colspan="2"><b>Nome:</b> <t t-esc="doc.partner_id.name"/></td><td><b>Celular:</b> <t t-esc="doc.partner_mobile"/></td></tr>
+            <tr><td colspan="3"><b>Endereço:</b> <t t-esc="doc.partner_street"/> - <t t-esc="doc.partner_street2"/> - <t t-esc="doc.partner_city"/> - <b>CEP:</b> <t t-esc="doc.partner_zip"/></td></tr>
+            <tr><td><b>Aparelho:</b> <t t-esc="doc.repair_product_id.display_name"/></td><td><b>Marca:</b> <t t-esc="doc.brand_id.display_name"/></td><td><b>Modelo:</b> <t t-esc="doc.model"/></td></tr>
+            <tr><td><b>Nº Série:</b> <t t-esc="doc.serial_number"/></td><td><b>Cor:</b> <t t-esc="doc.color"/></td><td><b>Acessórios:</b> <t t-esc="doc.accessories"/></td></tr>
+            <tr><td colspan="2"><b>Defeito:</b> <t t-esc="doc.issue_description"/></td><td><b>Data:</b> <span t-field="doc.date_in" t-options="{'widget': 'date'}"/></td></tr>
+            <tr><td colspan="2"><b>Observações:</b> <t t-esc="doc.notes"/></td><td><b>Responsável:</b> <t t-esc="doc.responsible_id.display_name"/></td></tr>
+
+            <tr><td colspan="3" style="padding:3px;text-align:center;">PARA RETIRAR O APARELHO É PRECISO DESTA NOTA OU SOMENTE O TITULAR DO CADASTRO COM IDENTIDADE</td></tr>
+            <tr>
+            <td colspan="3" style="padding:3px;line-height:1;">
+                <!-- param já definido no topo do template -->
+                <t t-set="entry_id"
+                  t-value="int(param.get_param('assistec.entry_text_id') or 0)"/>
+
+                <t t-if="entry_id">
+                    <t t-set="html_entry"
+                      t-value="env['assistec.print.text'].browse(entry_id).body_html.replace('__CLIENTE__', doc.partner_id.display_name)"/>
+                    <t t-raw="html_entry"/>
+                </t>
+            </td>
+            </tr>
+          </table>
+
+          <!-- Etiquetas -->
+          <div class="labels">
+            <t t-foreach="[1,2,3,4,5]" t-as="i">
+              <div class="label">
+                <div class="os"><t t-esc="doc.name"/></div>
+                <div><t t-esc="doc.partner_id.name"/></div>
+                <div><t t-esc="doc.partner_mobile"/></div>
+                <div class="small"><t t-esc="doc.model"/></div>
+              </div>
+            </t>
+          </div>
+
+          <!-- Canhotos -->
+          <div class="cut">recorte aqui</div>
+          <div class="via">
+            <div class="title">Comprovante de Retirada — Via Cliente</div>
+            <table class="tbl">
+              <tr><td style="width:25%;"><b>OS:</b> <t t-esc="doc.name"/></td><td colspan="2"><b>Cliente:</b> <t t-esc="doc.partner_id.name"/></td></tr>
+              <tr><td><b>Celular:</b> <t t-esc="doc.partner_mobile"/></td><td><b>Documento:</b> <t t-esc="doc.partner_vat"/></td><td style="width:28%;"><b>Data:</b> ____/____/____</td></tr>
+              <tr><td colspan="3"><b>Aparelho:</b> <t t-esc="doc.repair_product_id.display_name"/> | <b>Modelo:</b> <t t-esc="doc.model"/></td></tr>
+            </table>
+            <div class="sign-row" style="margin-top:25px;"><div class="sign">Ass. Cliente</div><div class="sign">Documento</div><div class="sign">Entregue por</div></div>
+          </div>
+
+          <div class="cut">recorte aqui</div>
+          <div class="via">
+            <div class="title">Comprovante de Retirada — Via Loja</div>
+            <table class="tbl">
+              <tr><td style="width:25%;"><b>OS:</b> <t t-esc="doc.name"/></td><td colspan="2"><b>Cliente:</b> <t t-esc="doc.partner_id.name"/></td></tr>
+              <tr><td><b>Celular:</b> <t t-esc="doc.partner_mobile"/></td><td><b>Documento:</b> <t t-esc="doc.partner_vat"/></td><td style="width:28%;"><b>Data:</b> ____/____/____</td></tr>
+              <tr><td colspan="3"><b>Aparelho:</b> <t t-esc="doc.repair_product_id.display_name"/> | <b>Modelo:</b> <t t-esc="doc.model"/></td></tr>
+            </table>
+            <div class="sign-row" style="margin-top:25px;"><div class="sign">Ass. Cliente</div><div class="sign">Documento</div><div class="sign">Recebido (Loja)</div></div>
+          </div>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- =============== TEMPLATE: SAÍDA =============== -->
+  <template id="report_order_exit">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="doc">
+        <div class="page">
+          <style>
+            html,body{width:210mm;margin:0;padding:0;}
+            @page{size:A4;margin:10mm;}
+
+            .tbl{
+                width:100%;
+                margin:0;
+                border-collapse:collapse;
+                table-layout:fixed;
+                font-size:12px;
+                line-height:1;
+            }
+            .tbl td,.tbl th{border:1px solid #000;padding:3px;vertical-align:top;word-wrap:break-word;}
+
+            .num{font-size:20px;font-weight:700;margin:0;}
+            .small{font-size:11px;}
+
+            .cut{border-top:1px dashed #000;margin:8px auto;text-align:center;font-size:10px;width:95%;}
+            .title{font-weight:700;text-align:center;margin:4px 0;font-size:12px;}
+            .sign-row{display:flex;gap:10px;margin-top:10px;}
+            .sign{flex:1;border-top:1px solid #000;text-align:center;padding-top:3px;font-size:11px;}
+          </style>
+
+
+          <!-- Cabeçalho + QR -->
+          <table class="tbl">
+            <tr>
+              <td colspan="2" style="padding:3px; text-align:center;">
+                  <!-- aqui entra o seu texto vindo do editor -->
+                  <t t-set="param" t-value="env['ir.config_parameter'].sudo()"/>
+                  <t t-set="header_id"
+                      t-value="int(param.get_param('assistec.header_text_id') or 0)"/>
+                  <t t-if="header_id">
+                      <t t-raw="env['assistec.print.text'].browse(header_id).body_html"/>
+                  </t>
+              </td>
+              <td style="width:30%;text-align:center;padding:3px;">
+                <h3 class="num">GARANTIA<br/>Nº: <t t-esc="doc.name"/></h3>
+                <t t-if="doc.qr_code">
+                  <img t-att-src="'data:image/png;base64,%s' % ((doc.qr_code.decode() if isinstance(doc.qr_code, bytes) else doc.qr_code))"
+                       style="width:70px;height:70px;margin-top:4px;"/>
+                </t>
+              </td>
+            </tr>
+            <tr><td colspan="3" style="padding:3px;text-align:center;"><b class="small">ATENDIMENTO 21-3900-5670</b></td></tr>
+
+            <!-- Dados cliente / aparelho -->
+            <tr><td colspan="2"><b>Nome:</b> <t t-esc="doc.partner_id.name"/></td><td><b>Celular:</b> <t t-esc="doc.partner_mobile"/></td></tr>
+            <tr><td colspan="3"><b>Endereço:</b> <t t-esc="doc.partner_street"/> - <t t-esc="doc.partner_street2"/> - <t t-esc="doc.partner_city"/> - <b>CEP:</b> <t t-esc="doc.partner_zip"/></td></tr>
+            <tr><td><b>Aparelho:</b> <t t-esc="doc.repair_product_id.display_name"/></td><td><b>Marca:</b> <t t-esc="doc.brand_id.display_name"/></td><td><b>Modelo:</b> <t t-esc="doc.model"/></td></tr>
+            <tr><td><b>Nº Série:</b> <t t-esc="doc.serial_number"/></td><td><b>Cor:</b> <t t-esc="doc.color"/></td><td><b>Acessórios:</b> <t t-esc="doc.accessories"/></td></tr>
+            <tr><td colspan="2"><b>Defeito inicial:</b> <t t-esc="doc.issue_description"/></td><td><b>Data saída:</b> <span t-field="doc.date_out" t-options="{'widget': 'date'}"/></td></tr>
+
+            <tr>
+              <td colspan="2" style="padding:3px;">
+                <b>Serviços executados:</b>
+                <div class="small">
+                  <t t-foreach="doc.line_ids" t-as="l">
+                    • <t t-esc="l.service_id.display_name"/>
+                    <t t-if="l.description"> — <t t-esc="l.description"/></t><br/>
+                  </t>
+                </div>
+              </td>
+              <td style="padding:3px;"><b>Responsável:</b> <t t-esc="doc.responsible_id.display_name"/></td>
+            </tr>
+
+            <tr><td colspan="2"><b>Garantia até:</b> <span t-field="doc.date_warranty" t-options="{'widget': 'date'}"/></td><td style="text-align:right;"><b>Total:</b> <span t-field="doc.amount_total" t-options="{'widget':'monetary','display_currency': doc.currency_id}"/></td></tr>
+
+            <tr>
+              <td colspan="3" style="padding:3px;line-height:1;">
+                  <!-- Defina `param` UMA vez por página (se já colocou, pode pular) -->
+                  <t t-set="param" t-value="env['ir.config_parameter'].sudo()"/>
+
+                  <!-- Aviso da SAÍDA -->
+                  <t t-set="exit_id"
+                    t-value="int(param.get_param('assistec.exit_notice_id') or 0)"/>
+                  <t t-if="exit_id">
+                    <t t-raw="env['assistec.print.text'].browse(exit_id).body_html"/>
+                  </t>
+              </td>
+            </tr>
+
+          </table>
+
+          <!-- Canhoto de retirada (saída) -->
+          <div class="cut">recorte aqui</div>
+          <div class="title">Canhoto — Retirada em Garantia</div>
+          <table class="tbl" style="font-size:11px;">
+            <tr><td style="width:25%;"><b>OS:</b> <t t-esc="doc.name"/></td><td><b>Cliente:</b> <t t-esc="doc.partner_id.name"/></td><td style="width:28%;"><b>Data:</b> ____/____/____</td></tr>
+            <tr><td colspan="3"><b>Aparelho:</b> <t t-esc="doc.repair_product_id.display_name"/> | <b>Modelo:</b> <t t-esc="doc.model"/></td></tr>
+          </table>
+          <div class="sign-row" style="margin-top:25px;"><div class="sign">Ass. Cliente</div><div class="sign">Documento</div><div class="sign">Recebido (Loja)</div></div>
+        </div>
+      </t>
+    </t>
+  </template>
+
+</odoo>

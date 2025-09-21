@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.log
+*.swp
+*.map
+*.egg-info/
+node_modules/
+build/
+dist/
+.vscode/
+.idea/
+.DS_Store

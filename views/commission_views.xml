@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_assistec_commission_line_search" model="ir.ui.view">
+        <field name="name">assistec.commission.line.search</field>
+        <field name="model">assistec.commission.line</field>
+        <field name="arch" type="xml">
+            <search string="Pesquisar Comissões">
+                <field name="order_id" string="Ordem de Serviço"/>
+                <field name="responsible_id"/>
+                <field name="partner_id"/>
+                <field name="date_out"/>
+                <group expand="1" string="Agrupar por">
+                    <filter string="Responsável" name="group_by_responsible" context="{'group_by': 'responsible_id'}"/>
+                    <filter string="Mês de Saída" name="group_by_date" context="{'group_by': 'date_out:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_assistec_commission_report" model="ir.actions.act_window">
+        <field name="name">Comissões Calculadas</field>
+        <field name="res_model">assistec.commission.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_assistec_commission_line_search"/>
+    </record>
+
+    <record id="view_assistec_commission_line_list" model="ir.ui.view">
+        <field name="name">assistec.commission.line.list</field>
+        <field name="model">assistec.commission.line</field>
+        <field name="arch" type="xml">
+            <list string="Comissões Calculadas">
+                <field name="order_id"/>
+                <field name="partner_id"/>
+                <field name="base_amount" sum="Total"/>
+                <field name="commission" sum="Total Comissão"/>
+                <field name="responsible_id"/>
+                <field name="date_out"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_assistec_commission_wizard_form" model="ir.ui.view">
+        <field name="name">assistec.commission.wizard.form</field>
+        <field name="model">assistec.commission.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Gerar Comissões">
+                <group>
+                    <field name="period_preset"/>
+                    <field name="responsible_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_generate" string="Gerar" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_assistec_commission_wizard" model="ir.actions.act_window">
+        <field name="name">Gerar Comissões</field>
+        <field name="res_model">assistec.commission.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

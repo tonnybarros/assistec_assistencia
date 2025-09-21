@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- 1) TEMPLATE QWEB onde o componente OWL será montado -->
+    <record id="template_assistec_dashboard" model="ir.ui.view">
+        <field name="name">assistec.dashboard.template</field>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <t t-name="assistec.Dashboard">
+                <div class="o_assistec_dashboard"/>
+            </t>
+        </field>
+    </record>
+
+    <!-- 2) CLIENT ACTION (OWL) -->
+    <record id="action_assistec_dashboard_client" model="ir.actions.client">
+        <field name="name">Painel de Controle</field>
+        <field name="tag">assistec_dashboard_client</field>
+    </record>
+
+    <!-- 3) ACT_WINDOW legado (para o atalho antigo #519 continuar existindo) -->
+    <record id="action_assistec_dashboard" model="ir.actions.act_window">
+        <field name="name">Painel (legado)</field>
+        <field name="res_model">assistec.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- 4) MENU – aponta para o Client Action novo -->
+    <menuitem id="menu_assistec_root"
+              name="Painel"
+              action="action_assistec_dashboard_client"
+              sequence="10"/>
+
+    <!-- Se o menu já existia desde antes com o mesmo ID,
+         NÃO crie de novo – apenas atualize a ação: -->
+    <!--
+    <record id="menu_assistec_root" model="ir.ui.menu">
+        <field name="action" ref="action_assistec_dashboard_client"/>
+    </record>
+    -->
+
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_assistec" model="ir.module.category">
+        <field name="name">Assistência Técnica</field>
+        <field name="description">Permissões para o módulo de Assistência Técnica.</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_assistec_finance" model="res.groups">
+        <field name="name">Financeiro Assistec</field>
+        <field name="category_id" ref="module_category_assistec"/>
+    </record>
+
+    <record id="group_assistec_commission" model="res.groups">
+        <field name="name">Comissão Assistec</field>
+        <field name="category_id" ref="module_category_assistec"/>
+    </record>
+
+    <record id="group_assistec_config" model="res.groups">
+        <field name="name">Configuração Assistec</field>
+        <field name="category_id" ref="module_category_assistec"/>
+    </record>
+</odoo>

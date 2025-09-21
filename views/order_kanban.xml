@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_assistec_order_kanban" model="ir.ui.view">
+        <field name="name">assistec.order.kanban</field>
+        <field name="model">assistec.order</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column"
+                    default_group_by="stage_id"
+                    quick_create="false">
+
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="priority"/>
+                <field name="date_in"/>
+                <field name="stage_id"/>
+                <field name="kanban_cover_image"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <t t-if="record.kanban_cover_image.value">
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('assistec.order', 'kanban_cover_image', record.id.value)"
+                                         alt="Foto do aparelho"
+                                         class="o_kanban_image_fill_left"/>
+                                </div>
+                            </t>
+
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <span><t t-esc="record.name.value"/></span>
+                                </strong>
+                                <div class="text-muted o_kanban_record_subtitle" t-if="record.partner_id.value">
+                                   <t t-esc="record.partner_id.value"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="priority" widget="priority"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="stage_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+</odoo>

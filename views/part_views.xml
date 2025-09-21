@@ -1,0 +1,35 @@
+<odoo>
+  <record id="view_assistec_part_list" model="ir.ui.view">
+    <field name="name">assistec.part.list</field>
+    <field name="model">assistec.part</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="list_price"/>
+        <field name="active"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_assistec_part_form" model="ir.ui.view">
+    <field name="name">assistec.part.form</field>
+    <field name="model">assistec.part</field>
+    <field name="arch" type="xml">
+      <form string="Peça / Componente">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="list_price"/>
+            <field name="active"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_assistec_parts" model="ir.actions.act_window">
+    <field name="name">Peças</field>
+    <field name="res_model">assistec.part</field>
+    <field name="view_mode">list,form</field>
+  </record>
+</odoo>

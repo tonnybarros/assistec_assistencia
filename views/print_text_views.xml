@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_print_text_form" model="ir.ui.view">
+    <field name="name">assistec.print.text.form</field>
+    <field name="model">assistec.print.text</field>
+    <field name="arch" type="xml">
+      <form string="Texto do comprovante">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="code" readonly="1"/>
+          </group>
+            <field name="body_html"
+                widget="html"
+                class="o_full_editor"
+                style="min-height:250px;"/>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+    <!-- DEPOIS  (usa <list> e type="list") -->
+    <record id="view_print_text_list" model="ir.ui.view">
+        <field name="name">assistec.print.text.list</field>
+        <field name="model">assistec.print.text</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+        <list decoration-info="code">
+            <field name="name"/>
+            <field name="code"/>
+        </list>
+        </field>
+    </record>
+
+
+  <record id="action_print_text" model="ir.actions.act_window">
+    <field name="name">Textos de Comprovante</field>
+    <field name="res_model">assistec.print.text</field>
+    <field name="view_mode">list,form</field>
+  </record>
+</odoo>

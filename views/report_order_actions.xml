@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Relatório de ENTRADA (HTML) -->
+  <record id="report_action_entry_html" model="ir.actions.report">
+    <field name="name">Comprovante de Entrada</field>
+    <field name="model">assistec.order</field>
+    <field name="report_type">qweb-html</field>
+    <!-- IMPORTANTE: é o XMLID do TEMPLATE QWeb -->
+    <field name="report_name">assistec_assistencia.report_order_entry</field>
+    <field name="print_report_name">(object.name or 'OS').replace('/','_') + '_entrada'</field>
+    <!-- sem binding_* => não aparece no menu Imprimir -->
+  </record>
+
+  <!-- Relatório de SAÍDA (HTML) -->
+  <record id="report_action_exit_html" model="ir.actions.report">
+    <field name="name">Comprovante de Saída</field>
+    <field name="model">assistec.order</field>
+    <field name="report_type">qweb-html</field>
+    <field name="report_name">assistec_assistencia.report_order_exit</field>
+    <field name="print_report_name">(object.name or 'OS').replace('/','_') + '_saida'</field>
+  </record>
+
+
+  <!-- Engrenagem: abrir ENTRADA (HTML puro, sem viewer) -->
+  <record id="action_entry_html_raw" model="ir.actions.server">
+    <field name="name">Comprovante (HTML)</field>
+    <field name="model_id" ref="model_assistec_order"/>
+    <field name="binding_model_id" ref="model_assistec_order"/>
+    <field name="binding_type">action</field>
+    <field name="state">code</field>
+    <field name="code"><![CDATA[
+action = records.action_open_entry_html_raw()
+    ]]></field>
+  </record>
+
+  <!-- Engrenagem: abrir SAÍDA (HTML puro, sem viewer) -->
+  <record id="action_exit_html_raw" model="ir.actions.server">
+    <field name="name">Saída (HTML)</field>
+    <field name="model_id" ref="model_assistec_order"/>
+    <field name="binding_model_id" ref="model_assistec_order"/>
+    <field name="binding_type">action</field>
+    <field name="state">code</field>
+    <field name="code"><![CDATA[
+action = records.action_open_exit_html_raw()
+    ]]></field>
+  </record>
+</odoo>

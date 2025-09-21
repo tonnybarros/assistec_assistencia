@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+  <!-- Apaga ações de relatório antigas -->
+  <delete id="assistec_assistencia.report_action_entry_receipt_html" model="ir.actions.report"/>
+  <delete id="assistec_assistencia.report_action_exit_receipt_html"  model="ir.actions.report"/>
+  <delete id="assistec_assistencia.report_action_entry_receipt_pdf"  model="ir.actions.report"/>
+  <delete id="assistec_assistencia.report_action_exit_receipt_pdf"   model="ir.actions.report"/>
+
+</odoo>

@@ -1,0 +1,26 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_assistec_order_user,assistec.order user,assistec_assistencia.model_assistec_order,base.group_user,1,1,1,1
+access_assistec_order_line_user,assistec.order.line user,assistec_assistencia.model_assistec_order_line,base.group_user,1,1,1,1
+access_assistec_service_user,assistec.service user,assistec_assistencia.model_assistec_service,base.group_user,1,1,1,1
+access_assistec_brand_user,assistec.brand user,assistec_assistencia.model_assistec_brand,base.group_user,1,1,1,1
+access_assistec_repair_product_user,assistec.repair.product user,assistec_assistencia.model_assistec_repair_product,base.group_user,1,1,1,1
+
+access_assistec_tag_user,assistec.tag user,assistec_assistencia.model_assistec_tag,base.group_user,1,1,1,0
+access_assistec_tag_manager,assistec.tag manager,assistec_assistencia.model_assistec_tag,base.group_system,1,1,1,1
+
+access_assistec_discount_user,assistec.discount user,assistec_assistencia.model_assistec_discount,base.group_user,1,0,0,0
+access_assistec_discount_manager,assistec.discount manager,assistec_assistencia.model_assistec_discount,base.group_system,1,1,1,1
+
+access_assistec_stage_user,assistec.stage user,assistec_assistencia.model_assistec_stage,base.group_user,1,0,0,0
+access_assistec_stage_manager,assistec.stage manager,assistec_assistencia.model_assistec_stage,base.group_system,1,1,1,1
+
+assistec_dashboard_access_user,assistec.dashboard access,model_assistec_dashboard,base.group_user,1,0,1,0
+access_assistec_part_user,assistec.part user,model_assistec_part,base.group_user,1,1,1,1
+access_assistec_order_part_line_user,assistec.order.part.line user,model_assistec_order_part_line,base.group_user,1,1,1,1
+access_assistec_commission_wizard_user,assistec.commission.wizard user,model_assistec_commission_wizard,base.group_user,1,0,1,0
+access_assistec_commission_line_user,assistec.commission.line user,model_assistec_commission_line,base.group_user,1,0,1,1
+access_assistec_order_close_wizard_user,assistec.order.close.wizard access (user),model_assistec_order_close_wizard,base.group_user,1,1,1,1
+access_assistec_order_change_stage_wizard_user,assistec.order.change.stage.wizard access (user),model_assistec_order_change_stage_wizard,base.group_user,1,1,1,1
+access_assistec_whatsapp_wizard,assistec.whatsapp.wizard,model_assistec_whatsapp_wizard,base.group_user,1,1,1,1
+access_assistec_print_text_system,"Print Text – Administrador",model_assistec_print_text,base.group_system,1,1,1,1
+access_assistec_payment_method_config_user,access.assistec.payment.method.config.user,model_assistec_payment_method,assistec_assistencia.group_assistec_config,1,1,1,1

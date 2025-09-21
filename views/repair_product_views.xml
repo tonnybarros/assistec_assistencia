@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+  <record id="view_assistec_repair_product_tree" model="ir.ui.view">
+    <field name="name">assistec.repair.product.tree</field>
+    <field name="model">assistec.repair.product</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="brand_id"/>
+        <field name="active"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_assistec_repair_product_form" model="ir.ui.view">
+    <field name="name">assistec.repair.product.form</field>
+    <field name="model">assistec.repair.product</field>
+    <field name="arch" type="xml">
+      <form string="Produto para Reparar">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="brand_id" options="{'no_create_edit': False, 'no_open': False}"/>
+            <field name="active"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+</data>
+</odoo>

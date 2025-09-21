@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_assistec_order_calendar" model="ir.ui.view">
+        <field name="name">assistec.order.calendar</field>
+        <field name="model">assistec.order</field>
+        <field name="arch" type="xml">
+            <calendar
+                string="Agenda de Entregas"
+                date_start="calendar_delivery_date"
+                color="calendar_color_index" mode="month"
+                create="false">
+                
+                <field name="display_name"/>
+                <field name="partner_id" filters="1"/>
+                <field name="repair_product_id"/>
+                <field name="stage_id"/>
+            </calendar>
+        </field>
+    </record>
+</odoo>

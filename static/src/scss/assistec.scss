@@ -1,0 +1,647 @@
+/* ===== Assistência – ajustes de UI ===== */
+
+/* 1) Statusbar (o “fluxo” no header) um pouco mais compacto,
+      principalmente para não criar scroll no mobile */
+.o_form_view header .o_statusbar_status {
+  gap: .35rem;
+}
+.o_form_view header .o_statusbar_status .o_arrow_button {
+  font-size: .9rem;         /* antes ~1rem */
+  line-height: 1.1;
+  padding: .25rem .65rem;   /* antes era mais “gordinho” */
+}
+@media (max-width: 576px) {
+  .o_form_view header .o_statusbar_status .o_arrow_button {
+    font-size: .8rem;
+    padding: .2rem .5rem;
+  }
+}
+
+/* 2) Dropdown de estágio (many2one no header) não ocupar a tela toda */
+.o_form_view header .o_field_widget[data-name="stage_id"] {
+  max-width: 360px;
+}
+@media (max-width: 576px) {
+  .o_form_view header .o_field_widget[data-name="stage_id"] {
+    max-width: 250px;
+  }
+}
+
+/* 3) Badges da lista levemente menores para caber melhor em telas estreitas */
+.o_list_view .o_badge,
+.o_list_view .badge {
+  font-size: .85rem;
+  line-height: 1.1;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+}
+
+/* 4) Paleta extra para usar com decoration-* nas views (lista/kanban/etc.)
+      Você já tem: info, success, warning, danger.
+      Abaixo adicionamos: primary, secondary, muted, purple, navy, teal.
+      (Só funcionam se você usar decoration-<nome> no XML) */
+
+.o_badge.decoration-primary,
+.badge.decoration-primary  { background: #e7f0ff; color: #0b5ed7; }
+
+.o_badge.decoration-secondary,
+.badge.decoration-secondary{ background: #eef0f3; color: #495057; }
+
+.o_badge.decoration-muted,
+.badge.decoration-muted     { background: #f6f7f9; color: #6c757d; }
+
+.o_badge.decoration-purple,
+.badge.decoration-purple    { background: #f1e9ff; color: #6f42c1; }
+
+.o_badge.decoration-navy,
+.badge.decoration-navy      { background: #e8eef8; color: #274c77; }
+
+.o_badge.decoration-teal,
+.badge.decoration-teal      { background: #e6fffa; color: #0c6; }
+
+/* 5) (Opcional) “pílula” grande de estágio, caso você use em algum lugar:
+      coloque class="assistec-stage-pill" no elemento para aplicar. */
+.assistec-stage-pill {
+  display: inline-block;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.15rem;     /* um pouco menor que o padrão gigante */
+}
+@media (max-width: 576px) {
+  .assistec-stage-pill { font-size: 1rem; padding: .25rem .7rem; }
+}
+
+/* === KPI Cards === */
+.assistec-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 6px 0 18px 0;
+}
+
+.assistec-card {
+  border: 0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 10px 28px rgba(20, 20, 20, 0.15);
+  position: relative;
+  transition: transform .08s ease, box-shadow .2s ease;
+  line-height: 1.15;
+
+  .kpi-title {
+    font-weight: 600;
+    font-size: 16px;
+    opacity: .95;
+    margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: .3px;
+
+    /* números de moeda ficam lindos um tico maiores */
+    .o_field_monetary {
+      font-size: 32px;
+      font-weight: 800;
+    }
+  }
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(20,20,20,.22); }
+}
+
+.is-clickable { cursor: pointer; }
+
+/* Paletas */
+.kpi-green  { background: linear-gradient(135deg, #2e7d32, #2bbd7e); }
+.kpi-blue   { background: linear-gradient(135deg, #1565c0, #1e73ff); }
+.kpi-cyan   { background: linear-gradient(135deg, #00bcd4, #00e5ff); color:#003a47; }
+.kpi-amber  { background: linear-gradient(135deg, #f6a700, #ffc107); color:#3a2500; }
+.kpi-purple { background: linear-gradient(135deg, #673ab7, #7e57c2); }
+.kpi-red    { background: linear-gradient(135deg, #d32f2f, #ef5350); }
+
+/* remove qualquer margem/label acidental dentro do card */
+.assistec-card .o_form_label { display: none !important; }
+.assistec-card .o_input { background: transparent; border: 0; color: inherit; text-align: center; }
+
+
+.assistec-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+.assistec-panel {
+  background: var(--o-view-background, #fff);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+}
+.assistec-panel-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.assistec-panel-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.assistec-chip {
+  background: #f4f6fa; border-radius: 999px; padding: 4px 10px;
+}
+.assistec-chip-count {
+  background: #e8f5e9; border-radius: 999px; padding: 4px 10px; font-weight: 700;
+}
+.assistec-list .mt8 { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+
+.assistec-stats { margin: 0; padding-left: 16px; }
+.assistec-stats li { margin: 4px 0; }
+
+.assistec-chart .assistec-svg { display: block; width: 100%; height: 60px; }
+.assistec-svg-bg { fill: #f9fafb; }
+.assistec-bar { fill: #5b9df9; opacity: .9; }
+
+.btn.btn-link.p-0 {
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+
+.assistec-progress{height:8px;border-radius:6px;background:#f0f2f5;overflow:hidden;margin-top:.5rem}
+.assistec-progress-bar{height:100%;background:#f59e0b}
+
+
+/* SOLUÇÃO FINAL: Cores de Fundo Mais Vivas */
+tr.o_data_row.text-info,
+tr.o_data_row.text-info > td {
+    background-color: #2196F3 !important; /* Exemplo de azul mais vivo */
+    color: #fff !important; /* Opcional: para o texto ficar branco */
+}
+tr.o_data_row.text-primary,
+tr.o_data_row.text-primary > td {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+}
+tr.o_data_row.text-warning,
+tr.o_data_row.text-warning > td {
+    background-color: #FF9800 !important;
+    color: #212529 !important; /* Opcional: para o texto ficar escuro */
+}
+tr.o_data_row.text-success,
+tr.o_data_row.text-success > td {
+    background-color: #4CAF50 !important;
+    color: #fff !important;
+}
+tr.o_data_row.text-danger,
+tr.o_data_row.text-danger > td {
+    background-color: #F44336 !important;
+    color: #fff !important;
+}
+ 
+/* ===== SOLUÇÃO DEFINITIVA FINAL COM CORES VIVAS E TODAS AS COLUNAS ===== */
+
+/* --- Cores Padrão Vivas --- */
+tr.o_data_row:has(td[data-tooltip="success"]) > td { background-color: #4CAF50 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="warning"]) > td { background-color: #FF9800 !important; color: #402c00 !important; }
+tr.o_data_row:has(td[data-tooltip="danger"]) > td { background-color: #F44336 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="primary"]) > td { background-color: #2196F3 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="info"]) > td { background-color: #00BCD4 !important; color: white !important; }
+
+/* --- Nossas Cores Customizadas Vivas --- */
+tr.o_data_row:has(td[data-tooltip="assistec_roxo"]) > td { background-color: #9C27B0 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_ciano"]) > td { background-color: #0097A7 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_marrom"]) > td { background-color: #795548 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_rosa"]) > td { background-color: #E91E63 !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_verde_limao"]) > td { background-color: #CDDC39 !important; color: #535811 !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_cinza_escuro"]) > td { background-color: #607D8B !important; color: white !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_amarelo"]) > td { background-color: #FFEB3B !important; color: #695f02 !important; }
+
+tr.o_data_row:has(td[data-tooltip="assistec_azul_escuro"])    > td { background-color:#004B8D !important; color:#fff !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_verde_escuro"])   > td { background-color:#1B5E20 !important; color:#fff !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_preto"])          > td { background-color:#000000 !important; color:#fff !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_cinza_claro"])    > td { background-color:#F1F3F4 !important; color:#1f2328 !important; }
+tr.o_data_row:has(td[data-tooltip="assistec_vermelho_claro"]) > td { background-color:#FF6B6B !important; color:#1f2328 !important; }
+
+/* Linhas da lista (row_color_class já aplicada na <tr>) */
+.o_list_view .o_data_row.assistec_amarelo { background: #ffe84a !important; }
+.o_list_view .o_data_row.assistec_marrom  { background: #795548 !important; }
+.o_list_view .o_data_row.success          { background: #2eb875 !important; }
+.o_list_view .o_data_row.warning          { background: #ff9900 !important; }
+/* …adicione as demais cores do seu COLOR_MAP… */
+
+/* Opcional: contraste na célula do checkbox/favorito */
+.o_list_view .o_data_row.assistec_amarelo td,
+.o_list_view .o_data_row.warning td        { color: #1f2328; }
+.o_list_view .o_data_row.success  td,
+.o_list_view .o_data_row.assistec_marrom td { color: #fff; }
+
+
+
+/* --------------------------------------------------------------------------
+   1 ▪ Esconde por completo a coluna técnica "row_color_class"
+   -------------------------------------------------------------------------- */
+.o_list_view thead th[data-name="row_color_class"],
+.o_list_view tbody td[data-name="row_color_class"],
+.o_list_view colgroup col[data-name="row_color_class"] {
+    display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   2 ▪ Paleta Odoo padrão (mantive para referência)
+   -------------------------------------------------------------------------- */
+
+/* Sucesso – verde padrão */
+.o_list_view .o_data_row.success,
+.o_list_view .o_data_row.success td {
+    background: #2eb875 !important;
+    color: #ffffff !important;
+}
+
+/* Aviso – laranja/âmbar padrão */
+.o_list_view .o_data_row.warning,
+.o_list_view .o_data_row.warning td {
+    background: #ff9900 !important;
+    color: #1f2328 !important;
+}
+
+/* Perigo – vermelho padrão */
+.o_list_view .o_data_row.danger,
+.o_list_view .o_data_row.danger td {
+    background: #e04848 !important;
+    color: #ffffff !important;
+}
+
+/* Primária – roxo/índigo padrão (para manter compat.) */
+.o_list_view .o_data_row.primary,
+.o_list_view .o_data_row.primary td {
+    background: #6f42c1 !important;
+    color: #ffffff !important;
+}
+
+/* Info – azul-claro padrão */
+.o_list_view .o_data_row.info,
+.o_list_view .o_data_row.info td {
+    background: #0dcaf0 !important;
+    color: #1f2328 !important;
+}
+
+/* --------------------------------------------------------------------------
+   3 ▪ Sua paleta customizada “Assistec”
+   -------------------------------------------------------------------------- */
+
+/* Roxo (assistec_roxo) */
+.o_list_view .o_data_row.assistec_roxo,
+.o_list_view .o_data_row.assistec_roxo td {
+    background: #7b61ff !important;   /* ajuste se quiser outro tom  */
+    color: #ffffff !important;
+}
+
+/* Ciano (assistec_ciano) */
+.o_list_view .o_data_row.assistec_ciano,
+.o_list_view .o_data_row.assistec_ciano td {
+    background: #00bcd4 !important;
+    color: #ffffff !important;
+}
+
+/* Marrom (assistec_marrom) */
+.o_list_view .o_data_row.assistec_marrom,
+.o_list_view .o_data_row.assistec_marrom td {
+    background: #795548 !important;
+    color: #ffffff !important;
+}
+
+/* Rosa (assistec_rosa) */
+.o_list_view .o_data_row.assistec_rosa,
+.o_list_view .o_data_row.assistec_rosa td {
+    background: #ff80bf !important;   /* rosa médio */
+    color: #1f2328 !important;
+}
+
+/* Verde Limão (assistec_verde_limao) */
+.o_list_view .o_data_row.assistec_verde_limao,
+.o_list_view .o_data_row.assistec_verde_limao td {
+    background: #02FE00 !important;
+    color: #1f2328 !important;
+}
+
+/* Azul Escuro (assistec_azul_escuro) */
+.o_list_view .o_data_row.assistec_azul_escuro,
+.o_list_view .o_data_row.assistec_azul_escuro td {
+    background:#004B8D !important;   /* tom navy */
+    color:#fff !important;
+}
+
+/* Verde Escuro (assistec_verde_escuro) — já incluído, mantido aqui para referência */
+.o_list_view .o_data_row.assistec_verde_escuro,
+.o_list_view .o_data_row.assistec_verde_escuro td {
+    background:#1B5E20 !important;
+    color:#fff !important;
+}
+
+/* Preto (assistec_preto) */
+.o_list_view .o_data_row.assistec_preto,
+.o_list_view .o_data_row.assistec_preto td {
+    background:#000000 !important;
+    color:#fff !important;
+}
+
+/* Cinza Claro (assistec_cinza_claro) */
+.o_list_view .o_data_row.assistec_cinza_claro,
+.o_list_view .o_data_row.assistec_cinza_claro td {
+    background:#F1F3F4 !important;   /* cinza quase branco */
+    color:#1f2328 !important;        /* texto escuro p/ contraste */
+}
+
+/* Vermelho Claro (assistec_vermelho_claro) */
+.o_list_view .o_data_row.assistec_vermelho_claro,
+.o_list_view .o_data_row.assistec_vermelho_claro td {
+    background:#FF6B6B !important;   /* coral */
+    color:#1f2328 !important;
+}
+
+
+/* Verde Limão (assistec_verde_escuro) */
+.o_list_view .o_data_row.assistec_verde_escuro,
+.o_list_view .o_data_row.assistec_verde_escuro td {
+    background: #1B5E20 !important;
+    color: #fff !important;
+}
+
+/* Cinza Escuro (assistec_cinza_escuro) */
+.o_list_view .o_data_row.assistec_cinza_escuro,
+.o_list_view .o_data_row.assistec_cinza_escuro td {
+    background: #607d8b !important;
+    color: #ffffff !important;
+}
+
+/* Amarelo Sol (assistec_amarelo) */
+.o_list_view .o_data_row.assistec_amarelo,
+.o_list_view .o_data_row.assistec_amarelo td {
+    background: #ffe84a !important;
+    color: #1f2328 !important;
+}
+
+/* --------------------------------------------------------------------------
+   4 ▪ (Opcional) — se também usa widget="badge" no campo stage_id
+   -------------------------------------------------------------------------- */
+.o_badge.text-bg-assistec_roxo        { background:#7b61ff !important; color:#fff !important; }
+.o_badge.text-bg-assistec_ciano       { background:#00bcd4 !important; color:#fff !important; }
+.o_badge.text-bg-assistec_marrom      { background:#795548 !important; color:#fff !important; }
+.o_badge.text-bg-assistec_rosa        { background:#ff80bf !important; color:#1f2328 !important; }
+.o_badge.text-bg-assistec_verde_limao { background:#02FE00 !important; color:#1f2328 !important; }
+.o_badge.text-bg-assistec_cinza_escuro{ background:#607d8b !important; color:#fff !important; }
+.o_badge.text-bg-assistec_amarelo     { background:#ffe84a !important; color:#1f2328 !important; }
+
+.o_badge.text-bg-assistec_azul_escuro   { background:#004B8D !important;  color:#fff !important; }
+.o_badge.text-bg-assistec_verde_escuro  { background:#1B5E20 !important;  color:#fff !important; }
+.o_badge.text-bg-assistec_preto         { background:#000000 !important;  color:#fff !important; }
+.o_badge.text-bg-assistec_cinza_claro   { background:#F1F3F4 !important;  color:#1f2328 !important; }
+.o_badge.text-bg-assistec_vermelho_claro{ background:#FF6B6B !important;  color:#1f2328 !important; }
+
+
+
+.o_list_view col[data-name="row_color_class"] {
+    width: 0 !important;
+}
+
+
+/* === Assistec Dashboard (Odoo 17/18) ===================================== */
+.o_assistec_dashboard {
+  --ass-gap: 16px;
+  --ass-radius: 14px;
+  --ass-border: var(--border-color, #e3e6ea);
+  --ass-bg: var(--o-view-background, #fff);
+  --ass-text: var(--o-gray-900, #1f2328);
+  --ass-muted: var(--o-gray-600, #6e7781);
+  --ass-soft: var(--o-gray-100, #f6f8fa);
+  --ass-brand: var(--o-brand-600, #7c4dff);
+
+  padding: 16px 18px 24px;
+  color: var(--ass-text);
+}
+
+/* ---------- TOP: KPIs --------------------------------------------------- */
+.o_assistec_dashboard .kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--ass-gap);
+  margin: 0 0 18px;
+}
+
+.o_assistec_dashboard .kpi-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  min-height: 90px;
+  padding: 14px 16px;
+  background: var(--ass-bg);
+  border: 1px solid var(--ass-border);
+  border-radius: var(--ass-radius);
+  box-shadow: 0 1px 2px rgba(20, 20, 20, .04);
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.o_assistec_dashboard .kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(20, 20, 20, .08);
+  border-color: #d0d7de;
+}
+.o_assistec_dashboard .kpi-card:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(20, 20, 20, .06);
+}
+
+.o_assistec_dashboard .kpi-card .kpi-value {
+  display: block;
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: var(--ass-text);
+}
+.o_assistec_dashboard .kpi-card .kpi-title {
+  display: block;
+  margin-top: 6px;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--ass-muted);
+  font-weight: 700;
+}
+
+/* ---------- CHART -------------------------------------------------------- */
+.o_assistec_dashboard #trendChart {
+  display: block;
+  width: 100%;
+  background: var(--ass-bg);
+  border: 1px solid var(--ass-border);
+  border-radius: var(--ass-radius);
+  padding: 8px;     /* dá um respiro ao gráfico */
+  margin-bottom: 20px;
+}
+
+/* ---------- “Seções” inferiores ---------------------------------------- */
+.o_assistec_dashboard .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: var(--ass-soft);
+  color: var(--ass-text);
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  font-weight: 600;
+}
+
+/* progress (nativo) */
+.o_assistec_dashboard progress {
+  width: 100%;
+  height: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.o_assistec_dashboard progress::-webkit-progress-bar {
+  background: var(--ass-soft);
+  border-radius: 8px;
+}
+.o_assistec_dashboard progress::-webkit-progress-value {
+  background: var(--ass-brand);
+  border-radius: 8px;
+}
+.o_assistec_dashboard progress::-moz-progress-bar {
+  background: var(--ass-brand);
+  border-radius: 8px;
+}
+
+/* ---------- utilidades --------------------------------------------------- */
+.o_assistec_dashboard .o_spinner {
+  margin: 24px 0;
+}
+
+/* garante que nada “vaze” visualmente dentro dos cards */
+.o_assistec_dashboard .kpi-card * {
+  text-shadow: none;
+}
+
+/* ---------- responsividade fina ----------------------------------------- */
+@media (max-width: 1200px) {
+  .o_assistec_dashboard { --ass-gap: 14px; }
+  .o_assistec_dashboard .kpi-card { min-height: 84px; }
+}
+@media (max-width: 576px) {
+  .o_assistec_dashboard { padding: 12px; }
+}
+ 
+
+/* Paleta (ajuste como quiser) */
+:root {
+  --ass-accent-open:        #2eb67d;
+  --ass-accent-today:       #0ea5e9;
+  --ass-accent-month:       #6366f1;
+  --ass-accent-revenue:     #16a34a;
+  --ass-accent-stalled:     #ef4444;
+  --ass-accent-without:     #f59e0b;
+}
+
+/* base */
+.o_assistec_dashboard .kpi-card {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  border-color: #e3e6ea;
+}
+
+/* filete colorido no topo */
+.o_assistec_dashboard .kpi-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--ass-accent, var(--ass-brand, #7c4dff));
+}
+
+/* leve “tinta” de fundo + borda/value com a cor do KPI */
+.o_assistec_dashboard .kpi-card {
+  background-image: linear-gradient(180deg, color-mix(in oklab, var(--ass-accent, #7c4dff) 8%, #fff) 0%, #fff 55%);
+  border-color: color-mix(in oklab, var(--ass-accent, #7c4dff) 25%, #e3e6ea);
+}
+.o_assistec_dashboard .kpi-card .kpi-value {
+  color: color-mix(in oklab, var(--ass-accent, #7c4dff) 85%, #111);
+}
+
+/* mapeia as classes geradas no template (kpi-<key>) para as cores acima */
+.o_assistec_dashboard .kpi-open            { --ass-accent: var(--ass-accent-open); }
+.o_assistec_dashboard .kpi-today           { --ass-accent: var(--ass-accent-today); }
+.o_assistec_dashboard .kpi-month           { --ass-accent: var(--ass-accent-month); }
+.o_assistec_dashboard .kpi-revenue_month   { --ass-accent: var(--ass-accent-revenue); }
+.o_assistec_dashboard .kpi-stalled_7d      { --ass-accent: var(--ass-accent-stalled); }
+.o_assistec_dashboard .kpi-without_budget  { --ass-accent: var(--ass-accent-without); }
+
+/* fallback se o navegador não suportar color-mix */
+@supports not (background: color-mix(in oklab, #000 50%, #fff)) {
+  .o_assistec_dashboard .kpi-card { background-image: none; }
+}
+
+/* Base dos cards (deve existir algo semelhante; mantive genérico) */
+.kpi-card{
+  --kpi-accent: var(--bs-gray-400);
+  border-top: 4px solid var(--kpi-accent);
+  border-radius: .5rem;
+  background: #fff;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .12s ease;
+}
+.kpi-card:hover{ transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+
+.kpi-card .kpi-value{ font-size: 2.25rem; font-weight: 700; line-height: 1; }
+.kpi-card .kpi-title{ display:block; margin-top:.25rem; letter-spacing:.04em; font-weight:600; color: var(--o-muted-text, #6c757d); }
+
+/* CORES por tipo (classe é 'kpi-' + key do card) */
+.kpi-card.kpi-open        { --kpi-accent: var(--bs-indigo, #6610f2); }
+.kpi-card.kpi-today       { --kpi-accent: var(--bs-primary); }
+.kpi-card.kpi-month       { --kpi-accent: var(--bs-purple, #6f42c1); }
+
+/* ✅ novo card */
+.kpi-card.kpi-approved    { --kpi-accent: var(--bs-success); }
+
+/* outros */
+.kpi-card.kpi-stalled_7d  { --kpi-accent: var(--bs-danger); }
+.kpi-card.kpi-without_budget { --kpi-accent: var(--bs-orange, #fd7e14); }
+
+/* gráfico (opcional só pra dar um ar mais limpo) */
+#trendChart{ width:100%; background: linear-gradient(180deg,#fff, #fafafa); border:1px solid #eee; border-radius:.5rem; padding:.25rem; }
+
+
+/* (opcional) se quiser que o card novo “Entregas hoje” fique verde
+   igual ao “OS Abertas” */
+.kpi-grid .kpi-card.kpi-due_today {
+  border-top-color: var(--ass-green-500, #27ae60);
+  box-shadow: 0 2px 0 0 rgba(39,174,96,.15) inset;
+  background: linear-gradient(180deg, rgba(39,174,96,.08), transparent);
+}
+
+/* Aumenta a altura do campo Serviço quando está em edição */
+.o_list_view td[data-name="service_id"] .o_input {
+    height: 3.6rem;          /* ajuste como quiser */
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    line-height: 1.3;        /* texto quebra dentro do input */
+    white-space: normal;     /* permite várias linhas */
+}
+
+/* static/src/scss/assistec_order_lines.scss */
+
+/* aumenta a altura da célula + input quando a linha está em edição */
+.o_list_view tr.o_row_edit td[data-name="service_id"] {
+    padding-top: 6px;          /* mais espaço interno */
+    padding-bottom: 6px;
+}
+
+.o_list_view tr.o_row_edit td[data-name="service_id"] .o_input {
+    height: 40px;              /* altura maior */
+    line-height: 38px;         /* texto centralizado */
+}

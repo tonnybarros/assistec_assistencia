@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. View de Lista para as Formas de Pagamento -->
+    <record id="view_assistec_payment_method_list" model="ir.ui.view">
+        <field name="name">assistec.payment.method.list</field>
+        <field name="model">assistec.payment.method</field>
+        <field name="arch" type="xml">
+            <list string="Formas de Pagamento" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 2. Ação para abrir a tela de Formas de Pagamento -->
+    <record id="action_assistec_payment_method" model="ir.actions.act_window">
+        <field name="name">Formas de Pagamento</field>
+        <field name="res_model">assistec.payment.method</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- 3. Menu em Configuração > Assistência -->
+    <menuitem id="menu_assistec_payment_method"
+              name="Formas de Pagamento"
+              parent="assistec_assistencia.menu_assistec_config"
+              action="action_assistec_payment_method"
+              sequence="15"/>
+</odoo>

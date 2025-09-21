@@ -1,0 +1,49 @@
+.o_dashboard_container {
+  padding: 1rem;
+}
+.o_dashboard_header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.o_dashboard_header h1 {
+  font-size: 1.75rem;
+  margin: 0;
+}
+.o_dashboard_cards .o_dashboard_card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+.o_dashboard_chart {
+  margin-top: 2rem;
+  border: none;
+  background: #fff;
+}
+
+.o_dashboard_title {
+  font-size: 1.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.display-6 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.o_finance_chart_body {
+    height: 400px !important;
+    min-height: 400px !important;
+    max-height: 400px !important;
+    position: relative;
+}
+.finance-dashboard-chart-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+

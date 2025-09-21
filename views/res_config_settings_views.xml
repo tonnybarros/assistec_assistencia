@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_res_config_settings_assistec" model="ir.ui.view">
+    <field name="name">res.config.settings.view.form.assistec</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+    <field name="priority" eval="15"/>
+    <field name="arch" type="xml">
+      <xpath expr="//form" position="inside">
+        <!-- IMPORTANTÍSSIMO: o name abaixo deve ser o NOME DO MÓDULO -->
+        <app name="assistec_assistencia" string="Assistência" data-string="Assistência">
+          <block name="assistec_os_block" title="Ordem de Serviço">
+            <setting string="Sequência das OS" id="assistec_order_sequence_setting"
+                     help="Selecione a sequência usada para numerar as Ordens de Serviço.">
+              <field name="order_sequence_id"/>
+            </setting>
+            <setting string="Dias de garantia" id="assistec_warranty_days_setting"
+                    help="Número de dias somados à Data de saída para calcular 'Garantia até'.">
+              <field name="warranty_days"/>
+            </setting>
+
+            <setting string="Prazo padrão de entrega (dias úteis)"
+                    id="assistec_delivery_workdays_setting"
+                    help="Somado à Data de entrada quando a OS é autorizada.">
+              <field name="delivery_workdays"/>
+            </setting>
+
+            <setting string="Situações (status) da OS" id="assistec_stages_open"
+                    help="Cadastre/edite as situações e seus gatilhos e cores.">
+              <button name="%(action_assistec_stage)d"
+                      type="action"
+                      string="Abrir Situações"
+                      class="oe_highlight"/>
+            </setting>
+
+            <setting string="Regras de descontos" id="assistec_discount_catalog_setting"
+                    help="Cadastre regras reutilizáveis de desconto e depois selecione-as nas linhas da OS.">
+              <button name="%(action_assistec_discount)d"
+                      type="action"
+                      string="Abrir regras de descontos"
+                      class="oe_highlight"/>
+            </setting>
+
+            <setting string="Forçar maiúsculas (cliente e aparelho)" id="assistec_uppercase_setting"
+                     help="Converte em MAIÚSCULAS alguns campos de texto.">
+              <field name="uppercase_enabled"/>
+            </setting>
+          </block>
+          <setting string="Percentual de comissão (%)">
+            <field name="commission_percent"/>
+          </setting>
+          <!-- substitua TODO o bloco Webhook pelo trecho abaixo -->
+          <block name="assistec_webhook_block"
+                title="Webhook (n8n / saída)"
+                description="Envio de dados da OS para um endpoint HTTP.">
+
+              <setting string="Ativar webhook">
+                  <field name="webhook_enabled"/>
+              </setting>
+
+              <setting string="URL do endpoint">
+                  <field name="webhook_url"
+                        placeholder="https://webhook.tectonny.com.br/webhook/postos"/>
+              </setting>
+
+              <setting string="Verificar certificado SSL">
+                  <field name="webhook_verify_ssl"/>
+              </setting>
+
+              <setting string="Timeout (segundos)">
+                  <field name="webhook_timeout"/>
+              </setting>
+
+              <setting string="Disparar quando criar OS">
+                  <field name="webhook_on_create"/>
+              </setting>
+
+              <setting string="Disparar ao mudar state">
+                  <field name="webhook_on_state_change"/>
+              </setting>
+
+              <setting string="Disparar nas situações (opcional)">
+                  <field name="webhook_stage_ids" widget="many2many_tags"
+                        options="{'no_create': True}"
+                        placeholder="Todas as situações"/>
+              </setting>
+
+              <setting string="Headers extras em JSON - opcional">
+                  <field name="webhook_headers_json"
+                        placeholder='{"X-Api-Key":"abc"}'/>
+              </setting>
+
+          </block>
+          <!-- dentro do <app name="assistec_assistencia" …> -->
+          <block name="assistec_print_block"
+                title="Comprovantes impressos"
+                description="Textos editáveis que aparecem nos relatórios.">
+            <setting string="Cabeçalho dos comprovantes">
+              <field name="header_text_id"
+                    context="{'form_view_ref':'assistec_assistencia.view_print_text_form'}"/>
+            </setting>
+
+            <separator string="Textos específicos"/>
+
+            <setting string="Texto 'Leia com atenção' (Entrada)">
+              <field name="entry_text_id"
+                    context="{'form_view_ref':'assistec_assistencia.view_print_text_form'}"/>
+            </setting>
+
+            <setting string="Texto de garantia (Saída)">
+              <field name="exit_text_id"
+                    context="{'form_view_ref':'assistec_assistencia.view_print_text_form'}"/>
+            </setting>
+          </block>
+
+        </app>
+      </xpath>
+    </field>
+  </record>
+</odoo>
