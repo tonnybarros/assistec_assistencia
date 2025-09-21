@@ -1,0 +1,122 @@
+[33mcommit 6d500fe6fe3a119241335a874eeaadec9487b8f0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m18.0[m[33m, [m[1;31morigin/18.0[m[33m)[m
+Author: Tonny <tectonny@gmail.com>
+Date:   Sun Sep 21 20:37:16 2025 -0300
+
+    refactor: unwrap module at branch 18.0 (move from assistec_assistencia/ to repo root) + gitignore pycache
+
+R082	assistec_assistencia/.gitignore	.gitignore
+R100	assistec_assistencia/README.md	README.md
+R100	assistec_assistencia/__init__.py	__init__.py
+R100	assistec_assistencia/__manifest__.py	__manifest__.py
+D	__pycache__/__init__.cpython-312.pyc
+R100	assistec_assistencia/controllers/__init__.py	controllers/__init__.py
+D	controllers/__pycache__/__init__.cpython-312.pyc
+D	controllers/__pycache__/binary_inline.cpython-312.pyc
+D	controllers/__pycache__/main.cpython-312.pyc
+D	controllers/__pycache__/portal.cpython-312.pyc
+R100	assistec_assistencia/controllers/binary_inline.py	controllers/binary_inline.py
+R100	assistec_assistencia/controllers/portal.py	controllers/portal.py
+R100	assistec_assistencia/data/payment_method_data.xml	data/payment_method_data.xml
+R100	assistec_assistencia/data/print_text.xml	data/print_text.xml
+R100	assistec_assistencia/data/sequences.xml	data/sequences.xml
+R100	assistec_assistencia/data/stage_data.xml	data/stage_data.xml
+R100	assistec_assistencia/models/__init__.py	models/__init__.py
+D	models/__pycache__/__init__.cpython-312.pyc
+D	models/__pycache__/assistec_webhook.cpython-312.pyc
+D	models/__pycache__/assistec_webhook_log.cpython-312.pyc
+D	models/__pycache__/brand.cpython-312.pyc
+D	models/__pycache__/commission.cpython-312.pyc
+D	models/__pycache__/dashboard.cpython-312.pyc
+D	models/__pycache__/finance_dashboard.cpython-312.pyc
+D	models/__pycache__/order.cpython-312.pyc
+D	models/__pycache__/order_line.cpython-312.pyc
+D	models/__pycache__/order_part_line.cpython-312.pyc
+D	models/__pycache__/order_qrcode.cpython-312.pyc
+D	models/__pycache__/part.cpython-312.pyc
+D	models/__pycache__/payment_method.cpython-312.pyc
+D	models/__pycache__/print_text.cpython-312.pyc
+D	models/__pycache__/repair_product.cpython-312.pyc
+D	models/__pycache__/res_config_settings.cpython-312.pyc
+D	models/__pycache__/service.cpython-312.pyc
+D	models/__pycache__/stage.cpython-312.pyc
+D	models/__pycache__/whatsapp_wizard.cpython-312.pyc
+R100	assistec_assistencia/models/assistec_webhook.py	models/assistec_webhook.py
+R100	assistec_assistencia/models/assistec_webhook_log.py	models/assistec_webhook_log.py
+R100	assistec_assistencia/models/brand.py	models/brand.py
+R100	assistec_assistencia/models/commission.py	models/commission.py
+R100	assistec_assistencia/models/dashboard.py	models/dashboard.py
+R100	assistec_assistencia/models/finance_dashboard.py	models/finance_dashboard.py
+R100	assistec_assistencia/models/order.py	models/order.py
+R100	assistec_assistencia/models/order_line.py	models/order_line.py
+R100	assistec_assistencia/models/order_part_line.py	models/order_part_line.py
+R100	assistec_assistencia/models/order_qrcode.py	models/order_qrcode.py
+R100	assistec_assistencia/models/part.py	models/part.py
+R100	assistec_assistencia/models/payment_method.py	models/payment_method.py
+R100	assistec_assistencia/models/print_text.py	models/print_text.py
+R100	assistec_assistencia/models/repair_product.py	models/repair_product.py
+R100	assistec_assistencia/models/res_config_settings.py	models/res_config_settings.py
+R100	assistec_assistencia/models/service.py	models/service.py
+R100	assistec_assistencia/models/stage.py	models/stage.py
+R100	assistec_assistencia/models/whatsapp_wizard.py	models/whatsapp_wizard.py
+R100	assistec_assistencia/security/grupos_usuarios.xml	security/grupos_usuarios.xml
+R100	assistec_assistencia/security/ir.model.access.csv	security/ir.model.access.csv
+R100	assistec_assistencia/static/description/README_SNIPPET.md	static/description/README_SNIPPET.md
+R100	assistec_assistencia/static/description/comissoes-calculadas-lista.png	static/description/comissoes-calculadas-lista.png
+R100	assistec_assistencia/static/description/configuracao-aparelhos-lista.png	static/description/configuracao-aparelhos-lista.png
+R100	assistec_assistencia/static/description/configuracao-assistencia-definicoes.png	static/description/configuracao-assistencia-definicoes.png
+R100	assistec_assistencia/static/description/configuracao-impressoes-comprovantes.png	static/description/configuracao-impressoes-comprovantes.png
+R100	assistec_assistencia/static/description/configuracao-servicos-lista.png	static/description/configuracao-servicos-lista.png
+R100	assistec_assistencia/static/description/configuracao-situacoes-lista.png	static/description/configuracao-situacoes-lista.png
+R100	assistec_assistencia/static/description/configuracao-webhook-assistencia.png	static/description/configuracao-webhook-assistencia.png
+R100	assistec_assistencia/static/description/financeiro-dashboard.png	static/description/financeiro-dashboard.png
+R100	assistec_assistencia/static/description/financeiro-formas-pagamento-lista.png	static/description/financeiro-formas-pagamento-lista.png
+R100	assistec_assistencia/static/description/financeiro-regras-descontos-lista.png	static/description/financeiro-regras-descontos-lista.png
+R100	assistec_assistencia/static/description/icon.png	static/description/icon.png
+R100	assistec_assistencia/static/description/index.html	static/description/index.html
+R100	assistec_assistencia/static/description/ordens-servico-graficos.png	static/description/ordens-servico-graficos.png
+R100	assistec_assistencia/static/description/ordens-servico-lista.png	static/description/ordens-servico-lista.png
+R100	assistec_assistencia/static/description/painel-dashboard.png	static/description/painel-dashboard.png
+R100	assistec_assistencia/static/src/finance_dashboard/finance_dashboard.css	static/src/finance_dashboard/finance_dashboard.css
+R100	assistec_assistencia/static/src/finance_dashboard/finance_dashboard.js	static/src/finance_dashboard/finance_dashboard.js
+R100	assistec_assistencia/static/src/finance_dashboard/finance_dashboard.xml	static/src/finance_dashboard/finance_dashboard.xml
+R100	assistec_assistencia/static/src/js/dashboard.js	static/src/js/dashboard.js
+R100	assistec_assistencia/static/src/js/image_open_in_tab.js	static/src/js/image_open_in_tab.js
+R100	assistec_assistencia/static/src/js/list_row_color_patch.js	static/src/js/list_row_color_patch.js
+R100	assistec_assistencia/static/src/scss/assistec.scss	static/src/scss/assistec.scss
+R100	assistec_assistencia/static/src/scss/assistec_badges.scss	static/src/scss/assistec_badges.scss
+R100	assistec_assistencia/static/src/scss/dashboard.scss	static/src/scss/dashboard.scss
+R100	assistec_assistencia/static/src/scss/order_list.scss	static/src/scss/order_list.scss
+R100	assistec_assistencia/static/src/xml/dashboard.xml	static/src/xml/dashboard.xml
+R100	assistec_assistencia/static/src/xml/many2many_binary_field.xml	static/src/xml/many2many_binary_field.xml
+R100	assistec_assistencia/views/brand_views.xml	views/brand_views.xml
+R100	assistec_assistencia/views/commission_views.xml	views/commission_views.xml
+R100	assistec_assistencia/views/dashboard_views.xml	views/dashboard_views.xml
+R100	assistec_assistencia/views/discount_views.xml	views/discount_views.xml
+R100	assistec_assistencia/views/finance_menu.xml	views/finance_menu.xml
+R100	assistec_assistencia/views/menu.xml	views/menu.xml
+R100	assistec_assistencia/views/menu_icon.xml	views/menu_icon.xml
+R100	assistec_assistencia/views/order_calendar_views.xml	views/order_calendar_views.xml
+R100	assistec_assistencia/views/order_graph.xml	views/order_graph.xml
+R100	assistec_assistencia/views/order_kanban.xml	views/order_kanban.xml
+R100	assistec_assistencia/views/order_views.xml	views/order_views.xml
+R100	assistec_assistencia/views/part_views.xml	views/part_views.xml
+R100	assistec_assistencia/views/payment_method_views.xml	views/payment_method_views.xml
+R100	assistec_assistencia/views/portal_templates.xml	views/portal_templates.xml
+R100	assistec_assistencia/views/print_text_views.xml	views/print_text_views.xml
+R100	assistec_assistencia/views/repair_product_views.xml	views/repair_product_views.xml
+R100	assistec_assistencia/views/report_cleanup.xml	views/report_cleanup.xml
+R100	assistec_assistencia/views/report_order.xml	views/report_order.xml
+R100	assistec_assistencia/views/report_order_actions.xml	views/report_order_actions.xml
+R100	assistec_assistencia/views/report_order_templates.xml	views/report_order_templates.xml
+R100	assistec_assistencia/views/res_config_settings_views.xml	views/res_config_settings_views.xml
+R100	assistec_assistencia/views/service_views.xml	views/service_views.xml
+R100	assistec_assistencia/views/stage_views.xml	views/stage_views.xml
+R100	assistec_assistencia/views/whatsapp_wizard_views.xml	views/whatsapp_wizard_views.xml
+R100	assistec_assistencia/views/wizard_views.xml	views/wizard_views.xml
+R100	assistec_assistencia/wizards/__init__.py	wizards/__init__.py
+D	wizards/__pycache__/__init__.cpython-312.pyc
+D	wizards/__pycache__/change_stage_wizard.cpython-312.pyc
+D	wizards/__pycache__/close_stage_wizard.cpython-312.pyc
+R100	assistec_assistencia/wizards/change_stage_wizard.py	wizards/change_stage_wizard.py
+R100	assistec_assistencia/wizards/change_stage_wizard_views.xml	wizards/change_stage_wizard_views.xml
+R100	assistec_assistencia/wizards/close_stage_wizard.py	wizards/close_stage_wizard.py

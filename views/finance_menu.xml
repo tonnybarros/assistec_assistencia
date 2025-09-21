@@ -1,5 +1,23 @@
 <odoo>
 
+    <!-- (1) SEARCH VIEW: vem antes de qualquer action que a use -->
+    <record id="view_assistec_order_search_revenue_test" model="ir.ui.view">
+        <field name="name">assistec.order.search.revenue.test</field>
+        <field name="model">assistec.order</field>
+        <field name="arch" type="xml">
+            <search string="Análise de Receitas">
+                <filter string="Em Garantia" name="filter_warranty"
+                        domain="[('warranty', '=', True)]"/>
+                <separator/>
+                <group expand="1" string="Agrupar por">
+                    <filter string="Responsável" name="group_by_responsible"
+                            context="{'group_by': 'responsible_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- (2) DASHBOARD -->
     <record id="action_assistec_finance_dashboard" model="ir.actions.client">
         <field name="name">Dashboard Financeiro</field>
         <field name="tag">assistec_finance_dashboard</field>
@@ -10,6 +28,7 @@
               action="action_assistec_finance_dashboard"
               sequence="1"/>
 
+    <!-- (3) RECEITAS (agora pode referenciar a search view acima) -->
     <record id="action_assistec_order_revenue" model="ir.actions.act_window">
         <field name="name">Receitas</field>
         <field name="res_model">assistec.order</field>
@@ -23,13 +42,14 @@
               action="action_assistec_order_revenue"
               sequence="2"/>
 
+    <!-- (4) SERVIÇOS -->
     <record id="action_finance_services" model="ir.actions.act_window">
         <field name="name">Serviços</field>
         <field name="res_model">assistec.order.line</field>
         <field name="view_mode">graph,pivot,list</field>
         <field name="context">
-          { 
-            "group_by": ["service_id"], 
+          {
+            "group_by": ["service_id"],
             "pivot_measures": ["subtotal"],
             "graph_measures": ["subtotal"]
           }
@@ -41,6 +61,7 @@
               action="action_finance_services"
               sequence="3"/>
 
+    <!-- (5) PEÇAS -->
     <record id="action_finance_parts" model="ir.actions.act_window">
         <field name="name">Peças</field>
         <field name="res_model">assistec.order.part.line</field>
@@ -55,6 +76,7 @@
               action="action_finance_parts"
               sequence="4"/>
 
+    <!-- (6) COMISSÕES -->
     <record id="action_assistec_commission" model="ir.actions.act_window">
         <field name="name">Comissões</field>
         <field name="res_model">assistec.commission.line</field>
@@ -67,18 +89,4 @@
               action="action_assistec_commission"
               sequence="5"/>
 
-    <record id="view_assistec_order_search_revenue_test" model="ir.ui.view">
-        <field name="name">assistec.order.search.revenue.test</field>
-        <field name="model">assistec.order</field>
-        <field name="arch" type="xml">
-            <search string="Análise de Receitas">
-                <filter string="Em Garantia" name="filter_warranty"
-                        domain="[('warranty', '=', True)]"/>
-                <separator/>
-                <group expand="1" string="Agrupar por">
-                    <filter string="Responsável" name="group_by_responsible" context="{'group_by': 'responsible_id'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
 </odoo>
