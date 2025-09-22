@@ -17,8 +17,8 @@
     "data": [
         # 1) GRUPOS — antes de qualquer menu que use esses grupos
         "security/grupos_usuarios.xml",
-        "views/finance_menu.xml",
         "views/menu.xml",
+        "views/finance_menu.xml",
         "views/commission_views.xml",
         "views/report_cleanup.xml",
         "security/ir.model.access.csv",
@@ -26,6 +26,7 @@
         "data/stage_data.xml",
         "data/print_text.xml",
         "data/payment_method_data.xml",
+        "data/group_defaults.xml",
         "views/dashboard_views.xml",
         "views/report_order_actions.xml",
         "views/order_views.xml",
