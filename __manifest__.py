@@ -1,8 +1,9 @@
 {
     "name": "Assistec Assistência",
     "summary": "Gestão simples de Ordens de Serviço (independente do módulo Repair)",
-    "version": "18.0.2.0.6",
-    "author": "Tectonny + ChatGPT",
+    "version": "18.0.2.0.8",
+    "author": "Tectonny",
+    "website": "https://github.com/tonnybarros/assistec_assistencia",
     "sequence": 1,
     "category": "Services",
     "license": "LGPL-3",
