@@ -1,0 +1,1 @@
+console.log("--- SCRIPT DE DEBUG ASSISTEC CARREGADO COM SUCESSO ---");
