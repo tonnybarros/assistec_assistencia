@@ -1,279 +1,285 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- views/order_views.xml -->
-  <record id="view_assistec_order_list" model="ir.ui.view">
-    <field name="name">assistec.order.list</field>
-    <field name="model">assistec.order</field>
-    <field name="arch" type="xml">
-      <list string="Ordens de Serviço"
-          default_order="date_in desc">
-        <field name="row_color_class" column_invisible="1"/>
-        <field name="stage_ui_class" optional="hide"/>
-        <field name="priority" widget="priority" string="" width="15%"/>
-        <field name="name"           string="Número" width="60%"/>
-        <field name="partner_id"     string="Cliente"/>
-        <field name="partner_mobile" string="Celular" widget="phone" optional="hide"/>
-        <field name="repair_product_id" string="Aparelho" widget="many2one" options="{'no_open': True}" optional="show"/>
-        <field name="brand_id" string="Marca" widget="many2one" options="{'no_open': True}" optional="hide"/>
-        <field name="model" string="Modelo" optional="hide"/>
-        <field name="date_in"        string="Entrada"  widget="relative"/>
-        <field name="date_repaired" widget="datetime" optional="show"/>
-        <field name="partner_city"   string="Cidade" optional="hide"/>
-        <field name="warranty"       string="Garantia?"/>
-        <field name="responsible_id" string="Responsável" widget="many2one_avatar_user"/>
-        <field name="stage_id" widget="badge"/>
-        <field name="state" optional="hide"/>
-      </list>
-    </field>
-  </record>
+    <record id="view_assistec_order_list" model="ir.ui.view">
+        <field name="name">assistec.order.list</field>
+        <field name="model">assistec.order</field>
+        <field name="arch" type="xml">
+            <list string="Ordens de Serviço"
+                  default_order="date_in desc">
+                <field name="row_color_class" column_invisible="1"/>
+                <field name="stage_ui_class" optional="hide"/>
+                <field name="priority" widget="priority" string="" width="15%"/>
+                <field name="name"              string="Número" width="60%"/>
+                <field name="partner_id"        string="Cliente"/>
+                <field name="partner_mobile" string="Celular" widget="phone" optional="hide"/>
+                <field name="repair_product_id" string="Aparelho" widget="many2one" options="{'no_open': True}" optional="show"/>
+                <field name="brand_id" string="Marca" widget="many2one" options="{'no_open': True}" optional="hide"/>
+                <field name="model" string="Modelo" optional="hide"/>
+                <field name="date_in"           string="Entrada"/>
+                <field name="date_repaired" widget="datetime" optional="show"/>
+                <field name="partner_city"      string="Cidade" optional="hide"/>
+                <field name="warranty"          string="Garantia?"/>
+                <field name="responsible_id" string="Responsável" widget="many2one_avatar_user"/>
+                <field name="stage_id" widget="badge"/>
+                <field name="state" optional="hide"/>
+            </list>
+        </field>
+    </record>
 
-  <!-- views/order_views.xml -->
-<record id="view_assistec_order_search" model="ir.ui.view">
-    <field name="name">assistec.order.search</field>
-    <field name="model">assistec.order</field>
-    <field name="arch" type="xml">
-        <search string="Buscar OS">
-            <field name="name" string="Qualquer campo"
-                  filter_domain="['|','|','|','|','|','|','|','|','|',
-                        ('name', 'ilike', self),
-                        ('partner_id.name', 'ilike', self),
-                        ('partner_city', 'ilike', self),
-                        ('partner_mobile', 'ilike', self),
-                        ('responsible_id.name', 'ilike', self),
-                        ('partner_vat', 'ilike', self),
-                        ('repair_product_id.name', 'ilike', self),
-                        ('model', 'ilike', self),
-                        ('brand_id.name', 'ilike', self),
-                        ('serial_number', 'ilike', self)
-                  ]"/>
-            
-            <separator/>
-
-            <filter name="flt_my" string="Minhas"
-                    domain="[('responsible_id','=',uid)]"/>
-            <filter name="flt_open" string="Em Andamento" 
-                    domain="[('stage_id.mark_closed', '=', False)]"/>
-            <filter name="flt_closed" string="Finalizadas"
-                    domain="[('stage_id.mark_closed', '=', True)]"/>
-            <!-- Novos filtros -->
-            <filter name="flt_warranty" string="Em Garantia"
-                    domain="[('warranty','=',True)]"/>
-            <filter name="flt_urgent" string="Urgentes"
-                    domain="[('tag_ids.name','ilike','URGENTE')]"/>
-
-            <separator/>
-            
-            <group expand="1" string="Agrupar por">
-                <filter name="grp_stage" string="Situação" context="{'group_by':'stage_id'}"/>
-                <filter name="grp_resp" string="Responsável" context="{'group_by':'responsible_id'}"/>
-                <filter name="grp_month_in"
-                  string="Mês de Entrada"
-                  context="{'group_by':'date_in','group_by_no_leaf':1}"/>
-                <filter name="grp_repair_product"
-                        string="Produto para Reparar"
-                        context="{'group_by':'repair_product_id'}"/>
-                <filter name="grp_brand"
-                        string="Marca"
-                        context="{'group_by':'brand_id'}"/>
-                <filter name="grp_model"
-                        string="Modelo"
-                        context="{'group_by':'model'}"/>
-                <!-- Novos agrupamentos personalizados -->
-                <filter name="grp_city"
-                        string="Cidade"
-                        context="{'group_by':'partner_city'}"/>
-                <filter name="grp_warranty"
-                        string="Em Garantia?"
-                        context="{'group_by':'warranty'}"/>
-                <filter name="grp_tags"
-                        string="Marcadores"
-                        context="{'group_by':'tag_ids'}"/>
-
+    <record id="view_assistec_order_search" model="ir.ui.view">
+        <field name="name">assistec.order.search</field>
+        <field name="model">assistec.order</field>
+        <field name="arch" type="xml">
+            <search string="Buscar OS">
+                <field name="name" string="Qualquer campo"
+                       filter_domain="['|','|','|','|','|','|','|','|','|',
+                                   ('name', 'ilike', self),
+                                   ('partner_id.name', 'ilike', self),
+                                   ('partner_city', 'ilike', self),
+                                   ('partner_mobile', 'ilike', self),
+                                   ('responsible_id.name', 'ilike', self),
+                                   ('partner_vat', 'ilike', self),
+                                   ('repair_product_id.name', 'ilike', self),
+                                   ('model', 'ilike', self),
+                                   ('brand_id.name', 'ilike', self),
+                                   ('serial_number', 'ilike', self)
+                               ]"/>
                 
-            </group>
+                <separator/>
 
-            <field name="stage_id"/>
+                <filter name="flt_my" string="Minhas"
+                        domain="[('responsible_id','=',uid)]"/>
+                <filter name="flt_open" string="Em Andamento" 
+                        domain="[('stage_id.mark_closed', '=', False)]"/>
+                <filter name="flt_closed" string="Finalizadas"
+                        domain="[('stage_id.mark_closed', '=', True)]"/>
+                <filter name="flt_warranty" string="Em Garantia"
+                        domain="[('warranty','=',True)]"/>
+                <filter name="flt_urgent" string="Urgentes"
+                        domain="[('tag_ids.name','ilike','URGENTE')]"/>
 
-        </search>
-    </field>
-</record>
+                <separator/>
+                
+                <group expand="1" string="Agrupar por">
+                    <filter name="grp_stage" string="Situação" context="{'group_by':'stage_id'}"/>
+                    <filter name="grp_resp" string="Responsável" context="{'group_by':'responsible_id'}"/>
+                    <filter name="grp_month_in"
+                            string="Mês de Entrada"
+                            context="{'group_by':'date_in','group_by_no_leaf':1}"/>
+                    <filter name="grp_repair_product"
+                            string="Produto para Reparar"
+                            context="{'group_by':'repair_product_id'}"/>
+                    <filter name="grp_brand"
+                            string="Marca"
+                            context="{'group_by':'brand_id'}"/>
+                    <filter name="grp_model"
+                            string="Modelo"
+                            context="{'group_by':'model'}"/>
+                    <filter name="grp_city"
+                            string="Cidade"
+                            context="{'group_by':'partner_city'}"/>
+                    <filter name="grp_warranty"
+                            string="Em Garantia?"
+                            context="{'group_by':'warranty'}"/>
+                    <filter name="grp_tags"
+                            string="Marcadores"
+                            context="{'group_by':'tag_ids'}"/>
+                </group>
 
-  <!-- FORM -->
-  <record id="view_assistec_order_form" model="ir.ui.view">
-    <field name="name">assistec.order.form</field>
-    <field name="model">assistec.order</field>
-    <field name="arch" type="xml">
-      <form string="Ordem de Serviço">
-<header>
-  <button name="button_open_stage_actions" type="object"
-          string="Situação" class="oe_highlight"/>
-  <field name="stage_id" widget="statusbar" clickable="1"/>
-</header>
+                <field name="stage_id"/>
 
-        <sheet>
-          <!-- Título com número somente leitura -->
-          <div class="oe_title">
-              <label class="o_form_label" for="name"/>
-              <h1 class="d-flex align-items-center">
-                  <!-- Estrela de prioridade -->
-                  <field name="priority" widget="priority" class="me-2"/>
-                  <field name="name" readonly="1"/>
-              </h1>
-          </div>
+            </search>
+        </field>
+    </record>
 
-          <group>
-            <!-- COLUNA ESQUERDA -->
-            <group>
-              <separator string="DADOS DO CLIENTE"/>
-              <field name="partner_id"/>
+    <record id="view_assistec_order_form" model="ir.ui.view">
+        <field name="name">assistec.order.form</field>
+        <field name="model">assistec.order</field>
+        <field name="arch" type="xml">
+            <form string="Ordem de Serviço">
+                <header>
+                    <button name="button_open_stage_actions" type="object"
+                            string="Situação" class="oe_highlight"/>
+                    <field name="stage_id" widget="statusbar" clickable="1"/>
+                </header>
 
-              <field name="partner_zip"
-                    placeholder="Somente números"
-                    maxlength="8"/>
-              <field name="partner_street"/>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_entry_html_raw"
+                                class="oe_stat_button"
+                                icon="fa-print"
+                                type="object"
+                                string="Entrada"/>
+                        <button name="action_open_exit_html_raw"
+                                class="oe_stat_button"
+                                icon="fa-print"
+                                type="object"
+                                string="Saída"/>
+                    </div>
 
-              <field name="customer_street_number"/>
-              <field name="customer_street_comp"/>
+                    <div class="oe_title">
+                        <label class="o_form_label" for="name"/>
+                        <h1 class="d-flex align-items-center">
+                            <field name="priority" widget="priority" class="me-2"/>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
 
-              <field name="partner_street2"/>
-              <field name="partner_city"/>
-              <field name="partner_state_id" invisible="1"/>
-              <field name="partner_country_id" invisible="1"/>
-              <field name="partner_mobile"/>
-              <field name="partner_vat"
-                    placeholder="Somente números"
-                    maxlength="11"/>
+                    <group>
+                        <group>
+                            <separator string="DADOS DO CLIENTE"/>
+                            <field name="partner_id"/>
+                            <field name="partner_zip"
+                                   placeholder="Somente números"
+                                   maxlength="8"/>
+                            <field name="partner_street"/>
+                            <field name="customer_street_number"/>
+                            <field name="customer_street_comp"/>
+                            <field name="partner_street2"/>
+                            <field name="partner_city"/>
+                            <field name="partner_state_id" invisible="1"/>
+                            <field name="partner_country_id" invisible="1"/>
+                            <field name="partner_mobile"/>
+                            <field name="partner_vat"
+                                   placeholder="Somente números"
+                                   maxlength="11"/>
 
-              <separator string="DADOS DO APARELHO"/>
-              <field name="repair_product_id"/>
-              <field name="brand_id"/>
-              <field name="model"/>
-              <field name="serial_number"/>
-              <field name="color"/>
-              <field name="issue_description" options="{'rows': 2}"/>
-              <field name="accessories"/>
-              <field name="notes"/>
-              <field name="image_ids" widget="many2many_binary"
-                     options="{'multi_image': True, 'accept': 'image/*'}"/>
-            </group>
+                            <separator string="DADOS DO APARELHO"/>
+                            <field name="repair_product_id"/>
+                            <field name="brand_id"/>
+                            <field name="model"/>
+                            <field name="serial_number"/>
+                            <field name="color"/>
+                            <field name="issue_description" options="{'rows': 2}"/>
+                            <field name="accessories"/>
+                            <field name="notes"/>
+                            <field name="image_ids" widget="many2many_binary"
+                                   options="{'multi_image': True, 'accept': 'image/*'}"/>
+                        </group>
 
-            <!-- COLUNA DIREITA -->
-            <group>
-              <separator string="ATENDIMENTO"/>
-              <field name="company_id" invisible="1"/>
-              <!-- não repetir o seletor aqui; só no header -->
-              <field name="responsible_id"/>
-              <field name="date_in"/>
-              <field name="tag_ids" widget="many2many_tags"
-                     options="{'color_field': 'color', 'no_create_edit': True}"/>
-              <field name="warranty"/>
-              <field name="notify_customer" class="oe_inline"/>
-              <field name="delivery_date" widget="date" invisible="stage_id.code != 'autorizado' and not delivery_date"/>
-              <field name="date_repaired" widget="datetime" invisible="not date_repaired"/>
-              <field name="date_out" widget="date" invisible="not date_out"/>
-              <!-- só aparece quando houver saída; sem attrs/states -->
-              <field name="date_warranty" readonly="1" invisible="not date_out"/>
-            </group>
-          </group>
+                        <group>
+                            <separator string="ATENDIMENTO"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="responsible_id"/>
+                            <field name="date_in"/>
+                            <field name="tag_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="warranty"/>
+                            <field name="notify_customer" class="oe_inline"/>
+                            <field name="delivery_date" widget="date" invisible="stage_id.code != 'autorizado' and not delivery_date"/>
+                            <field name="date_repaired" widget="datetime" invisible="not date_repaired"/>
+                            <field name="date_out" widget="date" invisible="not date_out"/>
+                            <field name="date_warranty" readonly="1" invisible="not date_out"/>
+                        </group>
+                    </group>
 
-          <notebook>
-            <page string="Serviços" name="services">
-              <field name="line_ids" colspan="2">
-                <list editable="bottom">
-                  <field name="service_id" string="Serviço" required="1"/>
-                  <field name="description" string="Descrição" optional="hide"/>
-                  <field name="quantity"    string="Qtd."      optional="hide"/>
-                  <field name="currency_id" column_invisible="True"/>
-                  <field name="price_unit"    string="Preço" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                  <field name="discount_id"   string="Desconto" options="{'no_open': True}"/>
-                  <field name="discount_type" string="Tipo desc." optional="hide"/>
-                  <field name="discount_value" string="Valor desc." optional="hide"/>
-                  <field name="subtotal"      string="Subtotal" readonly="1"/>
-                </list>
-              </field>
-            </page>
-            
-            <page string="Peças" name="parts">
-              <field name="part_line_ids" colspan="2">
-                <list editable="bottom">
-                  <field name="part_id"      string="Peça" required="1"/>
-                  <field name="description"  string="Descrição" optional="hide"/>
-                  <field name="quantity"     string="Qtd." optional="hide"/>
-                  <field name="currency_id" column_invisible="True"/>
-                  <field name="price_unit" string="Preço" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                  <field name="subtotal"     string="Subtotal" readonly="1"/>
-                </list>
-              </field>
-            </page>
+                    <notebook>
+                        <page string="Serviços" name="services">
+                            <field name="line_ids" colspan="2">
+                                <list editable="bottom">
+                                    <field name="service_id" string="Serviço" required="1"/>
+                                    <field name="description" string="Descrição" optional="hide"/>
+                                    <field name="quantity"    string="Qtd."      optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="price_unit"    string="Preço" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="discount_id"   string="Desconto" options="{'no_open': True}"/>
+                                    <field name="discount_type" string="Tipo desc." optional="hide"/>
+                                    <field name="discount_value" string="Valor desc." optional="hide"/>
+                                    <field name="subtotal"      string="Subtotal" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <page string="Peças" name="parts">
+                            <field name="part_line_ids" colspan="2">
+                                <list editable="bottom">
+                                    <field name="part_id"       string="Peça" required="1"/>
+                                    <field name="description"   string="Descrição" optional="hide"/>
+                                    <field name="quantity"      string="Qtd." optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="price_unit" string="Preço" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="subtotal"     string="Subtotal" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Laudo Técnico" name="laudo_tecnico">   
+                            <field name="laudo_tecnico"
+                                   placeholder="Laudo detalhado (procedimentos, medições, componentes, causas e conclusões)…"
+                                   nolabel="1" rows="10"/>
+                        </page>
+                        <page string="Defeito Real" name="misc">
+                            <field name="defeito_real"
+                                   placeholder="Defeito confirmado após o diagnóstico…"/>
+                        </page>
+                        <page string="Notas de reparo" name="repair_notes">
+                            <field name="repair_notes"
+                                   placeholder="Anote diagnósticos, testes, procedimentos, medições, etc."/>
+                        </page>
+                    </notebook>
+                    <div class="d-flex justify-content-end mt-2">
+                        <div class="text-end" style="min-width: 340px;">
+                            <div class="mb-1">
+                                <span class="me-2">Valor Sem Descontos:</span>
+                                <field name="amount_gross"    readonly="1" widget="monetary"
+                                       options="{'display_currency': true}"/>
+                            </div>
+                            <div class="mb-2">
+                                <span class="me-2">Descontos:</span>
+                                <field name="amount_discount" readonly="1" widget="monetary"
+                                       options="{'display_currency': true}"/>
+                            </div>
+                            <div class="fw-bold fs-5">
+                                <span class="me-2">Total:</span>
+                                <field name="amount_total"    readonly="1" widget="monetary"
+                                       options="{'display_currency': true}"/>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
 
-            <page string="Notas de reparo" name="repair_notes">
-              <field name="repair_notes" placeholder="Anote diagnósticos, testes, etc."/>
-            </page>
-
-            <page string="Defeito Real" name="misc">
-              <field name="defeito_real" placeholder="Defeito real, assunto técnico..."/>
-            </page>
-          </notebook>
-
-          <div class="d-flex justify-content-end mt-2">
-            <div class="text-end" style="min-width: 340px;">
-              <div class="mb-1">
-                <span class="me-2">Valor Sem Descontos:</span>
-                <field name="amount_gross"    readonly="1" widget="monetary"
-       options="{'display_currency': true}"/>
-              </div>
-              <div class="mb-2">
-                <span class="me-2">Descontos:</span>
-                <field name="amount_discount" readonly="1" widget="monetary"
-       options="{'display_currency': true}"/>
-              </div>
-              <div class="fw-bold fs-5">
-                <span class="me-2">Total:</span>
-                <field name="amount_total"    readonly="1" widget="monetary"
-       options="{'display_currency': true}"/>
-              </div>
-            </div>
-          </div>
-        </sheet>
-
-        <chatter/>
-      </form>
-    </field>
-  </record>
-
-    <!-- Adiciona o campo (apenas visualização) no formulário da OS -->
+    <record id="assistec_action_open_customer_history" model="ir.actions.server">
+        <field name="name">Histórico de OS</field>
+        <field name="model_id" ref="model_assistec_order"/>
+        <field name="binding_model_id" ref="model_assistec_order"/>
+        <field name="binding_type">action</field>
+        <field name="binding_view_types">form</field>
+        <field name="sequence">1</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_open_customer_history()</field>
+    </record>
+    
     <record id="view_assistec_order_form_show_payment" model="ir.ui.view">
         <field name="name">assistec.order.form.show.payment</field>
         <field name="model">assistec.order</field>
-        <field name="inherit_id" ref="assistec_assistencia.view_assistec_order_form"/> <!-- Use o ID do seu form principal aqui -->
+        <field name="inherit_id" ref="assistec_assistencia.view_assistec_order_form"/>
         <field name="arch" type="xml">
-            <!-- Usamos xpath para encontrar o DIV que contém o campo 'amount_total' -->
             <xpath expr="//div[field[@name='amount_total']]" position="after">
-                <!-- E adicionamos nosso novo DIV logo abaixo. -->
-                <!-- A condição 'invisible' no DIV esconde TUDO que está dentro dele -->
                 <div class="d-flex justify-content-end mt-2" invisible="not payment_method_id">
                     <div class="text-end" style="min-width: 340px;">
                          <div class="fw-bold fs-5">
-                            <span class="me-2">Forma de Pagamento:</span>
-                            <field name="payment_method_id"
-                                   readonly="1"
-                                   options="{'no_open': True}"/>
-                        </div>
+                             <span class="me-2">Forma de Pagamento:</span>
+                             <field name="payment_method_id"
+                                    readonly="1"
+                                    options="{'no_open': True}"/>
+                         </div>
                     </div>
                 </div>
             </xpath>
         </field>
     </record>
 
-  <!-- ACTION / ENGRENAGEM -->
     <record id="action_server_send_manual_webhook" model="ir.actions.server">
         <field name="name">Enviar Orçamento</field>
         <field name="model_id" ref="model_assistec_order"/>
         <field name="binding_model_id" ref="model_assistec_order"/>
         <field name="state">code</field>
         <field name="code">
-        action = records.action_send_webhook()
+    action = records.action_send_webhook()
         </field>
     </record>
 
