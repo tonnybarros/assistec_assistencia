@@ -105,17 +105,57 @@
                 </header>
 
                 <sheet>
+                    <field name="stage_is_default" invisible="1"/>
+                    <field name="stage_is_closed" invisible="1"/>
+                    
                     <div class="oe_button_box" name="button_box">
+                        <!-- Imprimir ENTRADA – só na etapa inicial -->
                         <button name="action_open_entry_html_raw"
+                                type="object"
                                 class="oe_stat_button"
                                 icon="fa-print"
-                                type="object"
-                                string="Entrada"/>
+                                string="Entrada"
+                                invisible="not stage_is_default"/>
+
+                        <button name="%(action_server_send_manual_webhook)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-whatsapp"
+                                string="Enviar Orçamento"
+                                invisible="not stage_is_default or amount_total &lt;= 0.0"/>
+
+                        <!-- Imprimir GARANTIA – só quando a OS já está fechada -->
                         <button name="action_open_exit_html_raw"
+                                type="object"
                                 class="oe_stat_button"
                                 icon="fa-print"
+                                string="Garantia"
+                                invisible="not stage_is_closed"/>
+
+                        <!-- ENCERRAR (abre o wizard) – só se foi reparada -->
+                        <button name="action_open_close_wizard"
                                 type="object"
-                                string="Saída"/>
+                                class="oe_stat_button"
+                                icon="fa-check"
+                                string="Fechar OS"
+                                invisible="stage_is_repaired == False"/>
+
+                        <!-- ► NOVO: REABRIR OS – só se a OS já está fechada -->
+                        <button name="%(action_open_reopen_wizard)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-undo"
+                                string="Reabrir OS"
+                                invisible="not stage_is_closed"/>
+
+                        <!-- Botão Consertado -->
+                        <button name="action_mark_repaired"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-wrench"
+                                string="Consertado"
+                                invisible="not stage_can_mark_repaired"/>
+
                     </div>
 
                     <div class="oe_title">

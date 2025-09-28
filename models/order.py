@@ -3,7 +3,7 @@ import logging
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv.expression import OR, AND
-from markupsafe import Markup
+from markupsafe import Markup, escape
 import re
 import requests
 
@@ -210,6 +210,83 @@ class AssistecOrder(models.Model):
         store=True,
     )
 
+    # CAMPOS NOVOS PARA CONTROLAR A VISIBILIDADE DOS BOTÕES
+    stage_is_default = fields.Boolean(
+        string="Estágio é Inicial?",
+        related='stage_id.is_default',
+        store=True,
+        readonly=True
+    )
+    stage_is_closed = fields.Boolean(
+        string="Estágio é Final?",
+        related='stage_id.mark_closed',
+        store=True,
+        readonly=True
+    )
+    stage_is_repaired = fields.Boolean(
+        string="Estágio é Reparado?",
+        related="stage_id.mark_repaired",  # usa o bool nativo do estágio
+        readonly=True
+    )
+
+    # NOVO ▸ True só nas etapas em que o botão “Consertado” faz sentido
+    stage_can_mark_repaired = fields.Boolean(
+        compute="_compute_stage_can_mark_repaired",
+        store=False,
+    )
+
+    # ajuste aqui os códigos/IDs das etapas ‘aprovadas’
+    _STAGES_CAN_MARK = {"autorizado", "aguardando_reparo", "aprovado"}
+
+    @api.depends("stage_id.code")
+    def _compute_stage_can_mark_repaired(self):
+        for rec in self:
+            rec.stage_can_mark_repaired = (
+                rec.stage_id and                    # tem etapa
+                not rec.stage_id.mark_repaired and  # ainda NÃO reparada
+                (rec.stage_id.code or "").lower() in self._STAGES_CAN_MARK
+            )
+
+
+    def action_open_close_wizard(self):
+        """Abre o wizard Encerrar OS já usado pelo menu Situação ▸ Encerrar OS."""
+        self.ensure_one()
+        action = self.env.ref(
+            "assistec_assistencia.action_open_close_stage_wizard"
+        ).read()[0]
+        action["context"] = {
+            **self.env.context,
+            "active_id": self.id,
+            "active_model": "assistec.order",
+        }
+        return action
+
+    def action_mark_repaired(self):
+        """Leva a OS para a primeira etapa que tenha mark_repaired=True."""
+        self.ensure_one()
+
+        if not self.stage_can_mark_repaired:
+            raise UserError(_("Esta OS não está em etapa apropriada para ser marcada como reparada."))
+
+        Stage = self.env["assistec.stage"].sudo()
+        new_stage = Stage.search(
+            [("mark_repaired", "=", True),
+            ("active", "=", True),
+            ("company_id", "in", [False, self.company_id.id])],
+            order="sequence asc",
+            limit=1,
+        )
+        if not new_stage:
+            raise UserError(_("Configure ao menos uma etapa marcada como 'Reparado'."))
+
+        self.write({"stage_id": new_stage.id})
+
+        body = Markup(
+            _("Situação alterada para <b>%s</b> (Reparado).") % escape(new_stage.name)
+        )
+        self.message_post(body=body, subtype_xmlid="mail.mt_comment", message_type="comment")
+        return True
+
     @api.model
     def _name_search(self, name, args=None, operator="ilike", limit=80, name_get_uid=None):
         """
@@ -319,6 +396,10 @@ class AssistecOrder(models.Model):
         string="Defeito Real",
         tracking=True,
     )
+    laudo_tecnico = fields.Text(
+        string="Laudo Técnico",
+        tracking=True,
+    )
     repair_notes = fields.Text(
         string="Notas de reparo",
         tracking=True,
@@ -394,9 +475,12 @@ class AssistecOrder(models.Model):
     amount_untaxed  = fields.Monetary("Subtotal",
                                     currency_field="currency_id",
                                     compute="_compute_amounts", store=True)
+
     amount_total    = fields.Monetary("Total",
                                     currency_field="currency_id",
-                                    compute="_compute_amounts", store=True)
+                                    compute="_compute_amounts", 
+                                    store=True,
+                                    default=0.0)
 
     amount_gross    = fields.Monetary("Valor Sem Descontos",
                                     currency_field="currency_id",
@@ -825,8 +909,6 @@ class AssistecOrder(models.Model):
         return seq
 
     # ---------------- Maiúsculas (aparelho/obs) ----------------
-# --- substitua TODOS os create()/write() por estes ---
-
     _uppercase_device_fields = ["model", "serial_number", "color", "issue_description", "accessories", "notes", "repair_notes"]
 
     @api.model_create_multi

@@ -277,6 +277,9 @@ class AssistecOrderWebhookExt(AssistecWebhookMixin, models.Model):
         for r in self:
             r._queue_webhook("manual")
             r._log_webhook(_('Webhook “%s” agendado.') % "manual")
+            r._set_stage_by_code("enviado")
+
+        next_action = {"type": "ir.actions.client", "tag": "reload"}
 
         return {
             "type": "ir.actions.client",
@@ -286,5 +289,6 @@ class AssistecOrderWebhookExt(AssistecWebhookMixin, models.Model):
                 "message": _("%s ordem(ns) adicionada(s) à fila de envio.") % len(self),
                 "type": "success",
                 "sticky": False,
+                "next": next_action,
             },
         }
