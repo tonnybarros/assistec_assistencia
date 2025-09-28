@@ -54,12 +54,13 @@
       <form string="Encerrar OS"> 
         <group>
           <field name="close_stage_id"
-                 placeholder="Escolha a situação de fechamento"
-                 options="{'no_create': True}"/>
+                placeholder="Escolha a situação de fechamento"
+                options="{'no_create': True}"
+                required="1"/>
                     <!-- CAMPO DE FORMA DE PAGAMENTO ADICIONADO AQUI -->
           <field name="payment_method_id"
                   options="{'no_create': True}"
-                  required="1"/>
+                  help="Obrigatório quando o estágio estiver marcado como Reparado."/>
           <field name="note" placeholder="Motivo/observações (opcional)"/>
         </group>
         <footer>
