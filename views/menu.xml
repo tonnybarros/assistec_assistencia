@@ -4,7 +4,7 @@
     <menuitem id="menu_assistec_root"
               name="Assistência"
               action="action_assistec_dashboard_client"
-              sequence="10"/>
+              sequence="1"/>
     <record id="menu_assistec_root" model="ir.ui.menu">
         <field name="web_icon">assistec_assistencia,static/description/icon.png</field>
     </record>
