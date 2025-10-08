@@ -1,78 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templates id="template" xml:space="preserve">
-    <t t-name="assistec_assistencia.FinanceDashboard">
+<templates id="assistec_finance_templates" xml:space="preserve">
+  <t t-name="assistec_assistencia.FinanceDashboard" owl="1">
+    <div class="o_action">
+
+      <!-- Control Panel minimalista: só Atualizar -->
+      <div class="o_control_panel">
+        <div class="o_cp_top">
+          <div class="o_cp_top_left"/>
+          <div class="o_cp_top_right">
+            <div class="o_cp_buttons">
+                <button type="button"
+                        class="btn btn-primary o_btn_refresh"
+                        t-att-disabled="state.loading ? true : undefined"
+                        t-on-click="reload">
+                <i class="fa fa-refresh me-1"/> Atualizar
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conteúdo rolável (evita travar) -->
+      <div class="o_content o_scrollable_auto p-3">
 
         <style>
-            .kpi_card {
-                background: #fff; border-radius: 8px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                padding: 20px; text-align: center; position: relative;
-                overflow: hidden; margin: 0 8px; flex: 1; min-width: 180px;
-            }
-            .kpi_card::before {
-                content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            }
-            .kpi_card .kpi_value {
-                font-size: 2.0rem;
-                font-weight: 600; line-height: 1.2; color: #333;
-            }
-            .kpi_card .kpi_title {
-                font-size: 0.8rem;
-                color: #6c757d; font-weight: 500; text-transform: uppercase;
-            }
-            .kpi_card.green::before { background-color: #28a745; }
-            .kpi_card.red::before { background-color: #dc3545; }
-            .kpi_card.amber::before { background-color: #ffc107; }
-            .kpi_card.purple::before { background-color: #6f42c1; }
-            .kpi_card.orange::before { background-color: #fd7e14; }
+          .kpi_card{background:#fff;border-radius:8px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);padding:20px;text-align:center;position:relative;overflow:hidden;margin:0 8px;flex:1;min-width:180px}
+          .kpi_card::before{content:"";position:absolute;top:0;left:0;width:100%;height:5px}
+          .kpi_card .kpi_value{font-size:2rem;font-weight:600;line-height:1.2;color:#333}
+          .kpi_card .kpi_title{font-size:.8rem;color:#6c757d;font-weight:500;text-transform:uppercase}
+          .kpi_card.green::before{background-color:#28a745}
+          .kpi_card.red::before{background-color:#dc3545}
+          .kpi_card.amber::before{background-color:#ffc107}
+          .kpi_card.purple::before{background-color:#6f42c1}
+          .kpi_card.orange::before{background-color:#fd7e14}
         </style>
 
         <div class="o_dashboard_container container-fluid p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="o_dashboard_title h2 mb-0">
-                    <i class="fa fa-chart-line text-primary me-2"/>Dashboard Financeiro
-                </h1>
-                <select t-model="state.period" t-on-change="onPeriodChange" class="form-select w-auto">
-                    <option value="day">Hoje</option>
-                    <option value="week">Esta Semana</option>
-                    <option value="month" selected="1">Este Mês</option>
-                </select>
-            </div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="o_dashboard_title h2 mb-0">
+              <i class="fa fa-chart-line text-primary me-2"/>Dashboard Financeiro
+            </h1>
+            <select t-model="state.period" t-on-change="onPeriodChange" class="form-select w-auto">
+              <option value="day">Hoje</option>
+              <option value="week">Esta Semana</option>
+              <option value="month" selected="1">Este Mês</option>
+            </select>
+          </div>
 
-            <div class="d-flex flex-wrap flex-lg-nowrap justify-content-center mb-4">
-                <div class="kpi_card green mb-3 mb-lg-0">
-                    <div class="kpi_value" t-esc="state.data.kpis.revenue_period"/>
-                    <div class="kpi_title">Receita (<t t-esc="state.period === 'day' ? 'Hoje' : (state.period === 'week' ? 'Semana' : 'Mês')"/>)</div>
-                </div>
-                <div class="kpi_card red mb-3 mb-lg-0">
-                    <div class="kpi_value" t-esc="state.data.kpis.expenses_total"/>
-                    <div class="kpi_title">Despesas Totais</div>
-                </div>
-                <div class="kpi_card amber mb-3 mb-lg-0">
-                    <div class="kpi_value" t-esc="state.data.kpis.parts_total"/>
-                    <div class="kpi_title">Custo de Peças</div>
-                </div>
-                <div class="kpi_card purple mb-3 mb-lg-0">
-                    <div class="kpi_value" t-esc="state.data.kpis.commission_total"/>
-                    <div class="kpi_title">Comissões</div>
-                </div>
-                <div class="kpi_card orange mb-3 mb-lg-0">
-                    <div class="kpi_value" t-esc="state.data.kpis.margin"/>
-                    <div class="kpi_title">Margem de Contribuição</div>
-                </div>
+          <div class="d-flex flex-wrap flex-lg-nowrap justify-content-center mb-4">
+            <div class="kpi_card green mb-3 mb-lg-0">
+              <div class="kpi_value" t-esc="state.data.kpis.revenue_period"/>
+              <div class="kpi_title">Receita (<t t-esc="state.period === 'day' ? 'Hoje' : (state.period === 'week' ? 'Semana' : 'Mês')"/>)</div>
             </div>
+            <div class="kpi_card red mb-3 mb-lg-0">
+              <div class="kpi_value" t-esc="state.data.kpis.expenses_total"/>
+              <div class="kpi_title">Despesas Totais</div>
+            </div>
+            <div class="kpi_card amber mb-3 mb-lg-0">
+              <div class="kpi_value" t-esc="state.data.kpis.parts_total"/>
+              <div class="kpi_title">Custo de Peças</div>
+            </div>
+            <div class="kpi_card purple mb-3 mb-lg-0">
+              <div class="kpi_value" t-esc="state.data.kpis.commission_total"/>
+              <div class="kpi_title">Comissões</div>
+            </div>
+            <div class="kpi_card orange mb-3 mb-lg-0">
+              <div class="kpi_value" t-esc="state.data.kpis.margin"/>
+              <div class="kpi_title">Margem de Contribuição</div>
+            </div>
+          </div>
 
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Tendência de Receita (Últimos 6 Meses)</h5>
-                    <div t-if="state.loading" class="text-center py-5">
-                        <i class="fa fa-spinner fa-spin fa-3x text-muted"/>
-                    </div>
-                    <div class="chart-container" style="height: 350px;">
-                        <canvas t-if="!state.loading" t-ref="chart"/>
-                    </div>
-                </div>
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-3">Tendência de Receita (Últimos 6 Meses)</h5>
+              <div t-if="state.loading" class="text-center py-5">
+                <i class="fa fa-spinner fa-spin fa-3x text-muted"/>
+              </div>
+              <div class="chart-container" style="height: 350px;">
+                <canvas t-if="!state.loading" t-ref="chart"/>
+              </div>
             </div>
+          </div>
         </div>
-    </t>
+
+      </div>
+    </div>
+  </t>
 </templates>

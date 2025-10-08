@@ -1,141 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="assistec_dashboard_templates" xml:space="preserve">
 
-    <t t-name="assistec.Dashboard">
+  <t t-name="assistec.Dashboard" owl="1">
+    <div class="o_action">
+        <!-- Control Panel minimalista (só Atualizar) -->
+        <div class="o_control_panel">
+        <div class="o_cp_top">
+            <div class="o_cp_top_left"></div>
+            <div class="o_cp_top_right">
+            <div class="o_cp_buttons">
+                <button type="button" class="btn btn-primary o_btn_refresh" t-on-click="this.reload">
+                <i class="fa fa-refresh me-1"></i>
+                Atualizar
+                </button>
+            </div>
+            </div>
+        </div>
+        </div>
+
+      <!-- Conteúdo rolável -->
+      <div class="o_content o_scrollable_auto p-3">
         <style>
-            .blinking-warning {
-                animation: blinker 1.5s linear infinite;
-                color: #dc3545; /* Vermelho */
-                font-weight: bold;
-            }
-            @keyframes blinker {
-                50% { opacity: 0.3; }
-            }
-            .notification-item:hover {
-                background-color: #f8f9fa;
-            }
+          .blinking-warning { animation: blinker 1.5s linear infinite; color:#dc3545; font-weight:bold; }
+          @keyframes blinker { 50% { opacity:0.3; } }
+          .notification-item:hover { background-color:#f8f9fa; }
         </style>
 
         <div class="o_assistec_dashboard">
-            <t t-if="state.loading">
-                <div class="o_spinner d-flex justify-content-center py-5"/>
-            </t>
-            <t t-else="">
-                <!-- Seção Superior: Cards de KPI -->
-                <div class="kpi-grid">
-                    <t t-foreach="state.cards" t-as="card" t-key="card.key">
-                        <div class="kpi-card"
-                             t-attf-class="kpi-card kpi-{{ card.key }}"
-                             t-on-click="() => this.openAction(card.action, card.domain)">
-                            <span class="kpi-value"><t t-esc="card.value"/></span>
-                            <span class="kpi-title"><t t-esc="card.label"/></span>
-                        </div>
-                    </t>
+          <t t-if="state.loading">
+            <div class="o_spinner d-flex justify-content-center py-5"/>
+          </t>
+          <t t-else="">
+
+            <!-- Cards -->
+            <div class="kpi-grid">
+              <t t-foreach="state.cards" t-as="card" t-key="card.key">
+                <div class="kpi-card"
+                     t-attf-class="kpi-card kpi-{{ card.key }}"
+                     t-on-click="() => this.openAction(card.action, card.domain)">
+                  <span class="kpi-value"><t t-esc="card.value"/></span>
+                  <span class="kpi-title"><t t-esc="card.label"/></span>
                 </div>
+              </t>
+            </div>
 
-                <!-- Gráfico de Tendência -->
-                <canvas t-ref="trend" id="trendChart" height="80"></canvas>
+            <!-- Gráfico -->
+            <canvas t-ref="trend" id="trendChart" height="80"></canvas>
 
-                <!-- NOVA SEÇÃO DE NOTIFICAÇÕES/ALERTAS -->
-                <div class="notifications-section mt-4">
-                    <t t-if="state.notifications.due_soon.length > 0">
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-header bg-warning text-dark"><i class="fa fa-clock-o me-2"/><b>Atenção: Prazos Vencendo</b></div>
-                            <ul class="list-group list-group-flush">
-                                <t t-foreach="state.notifications.due_soon" t-as="order" t-key="order.id">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center notification-item"
-                                        style="cursor: pointer;"
-                                        t-on-click="() => this.openOrder(order.id)">
-                                        <div>OS <b><t t-esc="order.name"/></b> - <t t-esc="order.partner_id[1]"/></div>
-                                        <t t-if="order.days_left == 0"><span class="badge rounded-pill blinking-warning">Vence Hoje!</span></t>
-                                        <t t-elif="order.days_left == 1"><span class="badge rounded-pill bg-warning text-dark">Vence Amanhã</span></t>
-                                        <t t-else=""><span class="badge rounded-pill bg-secondary">Vence em <t t-esc="order.days_left"/> dias</span></t>
-                                    </li>
-                                </t>
-                            </ul>
-                        </div>
+            <!-- Notificações -->
+            <div class="notifications-section mt-4">
+              <t t-if="state.notifications.due_soon.length > 0">
+                <div class="card shadow-sm mb-3">
+                  <div class="card-header bg-warning text-dark">
+                    <i class="fa fa-clock-o me-2"/><b>Atenção: Prazos Vencendo</b>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <t t-foreach="state.notifications.due_soon" t-as="order" t-key="order.id">
+                      <li class="list-group-item d-flex justify-content-between align-items-center notification-item"
+                          style="cursor:pointer;"
+                          t-on-click="() => this.openOrder(order.id)">
+                        <div>OS <b><t t-esc="order.name"/></b> — <t t-esc="order.partner_id[1]"/></div>
+                        <t t-if="order.days_left == 0">
+                          <span class="badge rounded-pill blinking-warning">Vence Hoje!</span>
+                        </t>
+                        <t t-elif="order.days_left == 1">
+                          <span class="badge rounded-pill bg-warning text-dark">Vence Amanhã</span>
+                        </t>
+                        <t t-else="">
+                          <span class="badge rounded-pill bg-secondary">
+                            Vence em <t t-esc="order.days_left"/> dias
+                          </span>
+                        </t>
+                      </li>
                     </t>
-                    <t t-if="state.notifications.urgent.length > 0">
-                        <div class="card shadow-sm mb-3">
-                            <div class="card-header bg-danger text-white"><i class="fa fa-star me-2"/><b>Ordens de Serviço Urgentes</b></div>
-                             <ul class="list-group list-group-flush">
-                                <t t-foreach="state.notifications.urgent" t-as="order" t-key="order.id">
-                                    <li class="list-group-item notification-item"
-                                        style="cursor: pointer;"
-                                        t-on-click="() => this.openOrder(order.id)">
-                                        OS <b><t t-esc="order.name"/></b> - <t t-esc="order.partner_id[1]"/>
-                                        (<span class="text-muted"><t t-esc="order.stage_id[1]"/></span>)
-                                    </li>
-                                </t>
-                            </ul>
-                        </div>
+                  </ul>
+                </div>
+              </t>
+
+              <t t-if="state.notifications.urgent.length > 0">
+                <div class="card shadow-sm mb-3">
+                  <div class="card-header bg-danger text-white">
+                    <i class="fa fa-star me-2"/><b>Ordens de Serviço Urgentes</b>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <t t-foreach="state.notifications.urgent" t-as="order" t-key="order.id">
+                      <li class="list-group-item notification-item"
+                          style="cursor:pointer;"
+                          t-on-click="() => this.openOrder(order.id)">
+                        OS <b><t t-esc="order.name"/></b> — <t t-esc="order.partner_id[1]"/>
+                        (<span class="text-muted"><t t-esc="order.stage_id[1]"/></span>)
+                      </li>
                     </t>
+                  </ul>
                 </div>
+              </t>
+            </div>
 
-                <!-- SEÇÃO INFERIOR DE KPIS (RESTAURADA) -->
-                <div class="row mt-4 g-3">
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-body">
-                                <h5 class="card-title text-muted mb-2">Top Responsável</h5>
-                                <p class="h4">
-                                    <t t-esc="state.kpis.top_resp.name"/> — <b><t t-esc="state.kpis.top_resp.qty"/> OS</b>
-                                </p>
-                                <hr/>
-                                <ul class="list-unstyled small mb-0">
-                                    <li>Média dias abertas: <b t-esc="state.kpis.avg_days_open"/> d</li>
-                                    <li>
-                                        % com orçamento:
-                                        <t t-if="state.kpis.budget_rate > 0">
-                                            <b><t t-esc="state.kpis.budget_rate"/>%</b>
-                                        </t>
-                                        <t t-else="">
-                                            <b>0%</b>
-                                        </t>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-body d-flex flex-column justify-content-center">
-                                <h5 class="card-title text-muted mb-2">Meta do Mês</h5>
-                                <div class="progress" style="height: 20px;">
-                                   <div role="progressbar"
-                                        t-attf-class="progress-bar {{ state.kpis.goal_bar_class }}"
-                                        t-attf-style="width: {{state.kpis.goal_progress}}%;"
-                                        t-att-aria-valuenow="state.kpis.goal_progress"
-                                        aria-valuemin="0" aria-valuemax="100">
-                                        <t t-esc="state.kpis.goal_progress"/>%
-                                   </div>
-                                </div>
-                                <div class="small text-center mt-1">
-                                    <b><t t-esc="state.kpis.done_month"/></b> / <t t-esc="state.kpis.goal"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-body">
-                                <h5 class="card-title text-muted mb-2">Últimos Cadastros</h5>
-                                <p class="mb-2">
-                                    <i class="fa fa-user me-1 text-primary"/> <b>Cliente:</b>
-                                    <t t-esc="state.kpis.last_partner.name"/>
-                                    <span class="text-muted small ms-1">(<t t-esc="state.kpis.last_partner.when"/>)</span>
-                                </p>
-                                <p class="mb-0">
-                                    <i class="fa fa-desktop me-1 text-primary"/> <b>Aparelho:</b>
-                                    <t t-esc="state.kpis.last_device.label"/>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- KPIs inferiores -->
+            <div class="row mt-4 g-3">
+              <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                  <div class="card-body">
+                    <h5 class="card-title text-muted mb-2">Top Responsável</h5>
+                    <p class="h4">
+                      <t t-esc="state.kpis.top_resp.name"/> —
+                      <b><t t-esc="state.kpis.top_resp.qty"/> OS</b>
+                    </p>
+                    <hr/>
+                    <ul class="list-unstyled small mb-0">
+                      <li>Média dias abertas: <b t-esc="state.kpis.avg_days_open"/> d</li>
+                      <li>% com orçamento:
+                        <b><t t-esc="state.kpis.budget_rate or 0"/>%</b>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
+              </div>
 
-            </t>
+              <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                  <div class="card-body d-flex flex-column justify-content-center">
+                    <h5 class="card-title text-muted mb-2">Meta do Mês</h5>
+                    <div class="progress" style="height:20px;">
+                      <div role="progressbar"
+                           t-attf-class="progress-bar {{ state.kpis.goal_bar_class }}"
+                           t-attf-style="width: {{ state.kpis.goal_progress }}%;"
+                           t-att-aria-valuenow="state.kpis.goal_progress"
+                           aria-valuemin="0" aria-valuemax="100">
+                        <t t-esc="state.kpis.goal_progress"/>%
+                      </div>
+                    </div>
+                    <div class="small text-center mt-1">
+                      <b><t t-esc="state.kpis.done_month"/></b> / <t t-esc="state.kpis.goal"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                  <div class="card-body">
+                    <h5 class="card-title text-muted mb-2">Últimos Cadastros</h5>
+                    <p class="mb-2">
+                      <i class="fa fa-user me-1 text-primary"/> <b>Cliente:</b>
+                      <t t-esc="state.kpis.last_partner.name"/>
+                      <span class="text-muted small ms-1">
+                        (<t t-esc="state.kpis.last_partner.when"/>)
+                      </span>
+                    </p>
+                    <p class="mb-0">
+                      <i class="fa fa-desktop me-1 text-primary"/> <b>Aparelho:</b>
+                      <t t-esc="state.kpis.last_device.label"/>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </t>
         </div>
-    </t>
+      </div>
+    </div>
+  </t>
 
 </templates>

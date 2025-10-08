@@ -92,6 +92,7 @@ class AssistecPortal(http.Controller):
             "order": order,
             "errors": errors,
             "stage_history": self._get_stage_history(order) if order else [],
+            "token": order.access_token if order else None,
         }
         return request.render("assistec_assistencia.os_status_result", ctx)
 
@@ -139,6 +140,7 @@ class AssistecPortal(http.Controller):
             "order": order,
             "errors": errors,
             "stage_history": self._get_stage_history(order) if order else [],
+            "token": token, 
         }
         return request.render("assistec_assistencia.os_status_result", ctx)
 
@@ -157,6 +159,7 @@ class AssistecPortal(http.Controller):
             "order": order,
             "errors": errors,
             "stage_history": self._get_stage_history(order) if order else [],
+            "token": order.access_token if order else None,
         }
         return request.render("assistec_assistencia.os_status_result", ctx)
 
@@ -188,6 +191,7 @@ class AssistecPortal(http.Controller):
             "order": order,
             "errors": errors,
             "stage_history": self._get_stage_history(order) if order else [],
+            "token": order.access_token if order else None,
         }
         return request.render("assistec_assistencia.os_status_result", ctx)
 
@@ -199,10 +203,13 @@ class AssistecPortal(http.Controller):
     def os_approve(self, token, **kw):
         order, err = self._apply_customer_decision(token, approve=True)
         errors = [err] if err else []
+        success = _("Você autorizou o orçamento. Obrigado!")
         ctx = {
             "order": order,
             "errors": errors,
             "stage_history": self._get_stage_history(order) if order else [],
+            "token": token,
+            "success": None if errors else success,
         }
         return request.render("assistec_assistencia.os_status_result", ctx)
 
@@ -211,10 +218,13 @@ class AssistecPortal(http.Controller):
     def os_reject(self, token, **kw):
         order, err = self._apply_customer_decision(token, approve=False)
         errors = [err] if err else []
+        success = _("Você indicou que NÃO autoriza o orçamento.")
         ctx = {
             "order": order,
             "errors": errors,
             "stage_history": self._get_stage_history(order) if order else [],
+            "token": token,
+            "success": None if errors else success,
         }
         return request.render("assistec_assistencia.os_status_result", ctx)
 
@@ -251,7 +261,7 @@ class AssistecPortal(http.Controller):
                 "decision": code_needed,
                 "amount_total": order.amount_total,
                 "phone": order.partner_mobile,          # ← agora vai o celular
-                "timestamp": fields.Datetime.now(),
+                "timestamp": fields.Datetime.to_string(fields.Datetime.now()),
             }
             order._send_webhook(payload)   # método já existente no mixin
         except Exception as e:

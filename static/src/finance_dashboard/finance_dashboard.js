@@ -1,33 +1,40 @@
 /** @odoo-module **/
-import { Component, onWillStart, onMounted, onPatched, useState, useRef } from '@odoo/owl';
-import { registry } from '@web/core/registry';
-import { useService } from '@web/core/utils/hooks';
+import { Component, onWillStart, onMounted, onPatched, onWillUnmount, useState, useRef } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
 
 class FinanceDashboard extends Component {
+    static template = "assistec_assistencia.FinanceDashboard"; // mantenha igual ao t-name do XML
+
+    // Exibe Control Panel padrão (sem portal)
+    reload = async () => {
+    await this._loadData();
+    };
+
     setup() {
-        this.orm = useService('orm');
+        this.orm = useService("orm");
         this.state = useState({
             loading: true,
-            data: { kpis: {}, series: [] }, // Inicia com estrutura vazia
-            period: 'month',
+            data: { kpis: {}, series: [] },
+            period: "month",
         });
-        this.chartRef = useRef('chart');
+        this.chartRef = useRef("chart");
 
         onWillStart(() => this._loadData());
-        
-        // onMounted é para a primeira renderização
         onMounted(() => this._renderChart());
-
-        // onPatched é para TODAS as atualizações subsequentes
         onPatched(() => this._renderChart());
+
+        onWillUnmount(() => {
+            if (this._chart) {
+                try { this._chart.destroy(); } catch (_) {}
+            }
+        }); 
     }
 
     async _loadData() {
         this.state.loading = true;
-        const data = await this.orm.call(
-            'assistec.finance.dashboard', 'get_data', [this.state.period]
-        );
-        this.state.data = data;
+        const data = await this.orm.call("assistec.finance.dashboard", "get_data", [this.state.period]);
+        this.state.data = data || { kpis: {}, series: [] };
         this.state.loading = false;
     }
 
@@ -37,30 +44,26 @@ class FinanceDashboard extends Component {
     }
 
     _renderChart() {
-        // Se estiver carregando ou se o canvas não estiver na tela, não faz nada.
-        if (this.state.loading || !this.chartRef.el) {
-            return;
-        }
+        if (this.state.loading || !this.chartRef.el) return;
 
-        // Limpa o gráfico anterior para evitar sobreposição ou memory leaks
         if (this._chart) {
-            this._chart.destroy();
+            try { this._chart.destroy(); } catch (_) {}
         }
 
         const series = this.state.data.series || [];
         const labels = series.map(([m]) => m);
-        const data = series.map(([, v]) => v);
-        const ctx = this.chartRef.el.getContext('2d');
+        const values = series.map(([, v]) => v);
+        const ctx = this.chartRef.el.getContext("2d");
 
         this._chart = new Chart(ctx, {
-            type: 'bar',
+            type: "bar",
             data: {
                 labels,
                 datasets: [{
-                    label: `Receita (6m)`,
-                    data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    label: "Receita (6m)",
+                    data: values,
+                    backgroundColor: "rgba(54, 162, 235, 0.6)",
+                    borderColor: "rgba(54, 162, 235, 1)",
                     borderWidth: 1,
                     borderRadius: 5,
                 }],
@@ -69,23 +72,30 @@ class FinanceDashboard extends Component {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: true, position: 'top' }
+                    legend: { display: true, position: "top" },
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
-                                return 'R$ ' + value.toLocaleString('pt-BR');
-                            }
-                        }
-                    }
-                }
-            }
+                            callback: (value) => "R$ " + Number(value).toLocaleString("pt-BR"),
+                        },
+                    },
+                },
+            },
         });
     }
+
+    reload = async () => {
+    await this._loadData();
+    this._renderChart();   // opcional: redesenha se já estava na tela
+    };
+
 }
 
-FinanceDashboard.template = 'assistec_assistencia.FinanceDashboard';
-registry.category('actions').add('assistec_finance_dashboard', FinanceDashboard);
+// Registra a ação com a mesma tag usada no menu/ir.actions.client
+registry.category("actions").add("assistec_finance_dashboard_client", FinanceDashboard);
+// (Opcional) mantém um alias antigo, se existir menu usando essa tag:
+registry.category("actions").add("assistec_finance_dashboard", FinanceDashboard);
+
 export default FinanceDashboard;
