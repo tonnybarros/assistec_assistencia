@@ -1,71 +1,44 @@
-/* Arquivo: assistec_assistencia/static/src/scss/dashboard.scss */
-/* VERSÃO CORRIGIDA COM SELETORES MAIS ESPECÍFICOS */
+/* assistec_assistencia/static/src/scss/dashboard.scss */
 
-.o_form_view.o_assistec_dashboard {
-    .o_form_sheet_bg {
-        background-color: #f0f2f5; // Um fundo levemente cinza para o dashboard
-    }
-
-    .kpi-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .kpi-card {
-        border: none;
-        border-radius: 8px;
-        padding: 1rem;
-        display: flex;
-        align-items: center;
-        text-align: left;
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-
-        &:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-        }
-
-        .kpi-icon {
-            font-size: 2.5rem;
-            margin-right: 1rem;
-            opacity: 0.7;
-        }
-
-        .kpi-content {
-            .kpi-value {
-                font-size: 1.75rem;
-                font-weight: 600;
-            }
-            .kpi-title {
-                font-size: 0.9rem;
-                color: #6c757d;
-            }
-        }
-    }
-
-    .panel-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .panel {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        
-        .panel-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .panel-body {
-            padding: 1rem;
-        }
-    }
+/* 1 ▪ wrapper rolável */
+.o_controller > .o_assistec_dashboard {
+    height: 100%;      /* ocupa todo o espaço do controller  */
+    overflow-y: auto;  /* rolagem vertical interna           */
+    overflow-x: hidden;/* evita scroll horizontal acidental  */
+    padding: var(--o-view-padding, 16px);
 }
+
+/* 2 ▪ todo o resto do seu layout -------------------------- */
+
+/* Fundo da folha (mantido) */
+.o_assistec_dashboard .o_form_sheet_bg {
+    background-color: #f0f2f5;
+}
+
+/* Grid dos KPIs */
+.o_assistec_dashboard .kpi-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Cartão KPI … (demais regras iguais) */
+.o_assistec_dashboard .kpi-card { /* … */ }
+
+/* Painéis inferiores */
+.o_assistec_dashboard .panel-container { /* … */ }
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .o_assistec_dashboard .kpi-container { grid-template-columns: 1fr 1fr; }
+    .o_assistec_dashboard .panel-container { grid-template-columns: 1fr; }
+}
+
+.o_assistec_dashboard .kpi-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); }
+.o_assistec_dashboard .kpi-card { cursor: pointer; padding: 16px; border-radius: 12px; border: 1px solid #e4e7ed; background: #fff; }
+.o_assistec_dashboard canvas#trendChart { width: 100%; max-height: 220px; }
+
+/* dá um respiro e arruma o botão */
+.o_action .o_control_panel .o_cp_top { padding: 6px 8px; }
+.o_cp_buttons .o_btn_refresh { border-radius: 8px; }

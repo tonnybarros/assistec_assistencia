@@ -7,7 +7,7 @@
     </xpath>
     <xpath expr="//footer" position="attributes">
       <attribute name="t-if">not hide_footer</attribute>
-    </xpath>
+    </xpath> 
   </template>
 
   <!-- ================= TEMPLATE: FORMULÁRIO ================= -->
@@ -66,9 +66,44 @@
                 <div class="alert alert-danger mb-4" t-esc="err"/>
               </t>
             </t>
+            <!-- TOAST de sucesso -->
+            <t t-if="success">
+            <style>
+              .toast-lite-wrap{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1080}
+              .toast-lite{background:#198754;color:#fff;border-radius:.5rem;padding:.75rem 1rem;box-shadow:0 6px 20px rgba(0,0,0,.15);opacity:0;transition:opacity .25s ease, transform .25s ease;transform:translateY(-6px)}
+              .toast-lite.show{opacity:1;transform:translateY(0)}
+              .toast-lite .close{background:transparent;border:0;color:#fff;font-size:1.25rem;line-height:1;padding:0 .25rem;margin-left:.5rem;cursor:pointer}
+            </style>
+
+            <div id="assistecToastWrap" class="toast-lite-wrap">
+              <div id="assistecToast" class="toast-lite" role="status" aria-live="polite">
+                <span><t t-esc="success"/></span>
+                <button class="close" aria-label="Fechar" onclick="(function(b){b.parentNode.removeChild(b.parentNode)})(this)">×</button>
+              </div>
+            </div>
+
+            <script>
+              <![CDATA[
+                (function () {
+                  var el = document.getElementById('assistecToast');
+                  if (!el) return;
+                  // mostra
+                  requestAnimationFrame(function(){ el.classList.add('show'); });
+                  // auto-hide após 4s
+                  setTimeout(function(){
+                    el.classList.remove('show');
+                    setTimeout(function(){
+                      var w = document.getElementById('assistecToastWrap');
+                      if (w && w.parentNode) w.parentNode.removeChild(w);
+                    }, 300);
+                  }, 4000);
+                })();
+              ]]>
+            </script>
+          </t>
 
             <!-- resultado -->
-            <t t-elif="order">
+            <t t-if="order">
               <div class="p-4 bg-white rounded shadow-sm">
                 <!-- Cabeçalho OS -->
                 <h2 class="mb-2 text-success">
