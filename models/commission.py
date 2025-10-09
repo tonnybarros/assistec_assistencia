@@ -97,7 +97,13 @@ class AssistecCommissionLine(models.Model):
     order_id = fields.Many2one("assistec.order", string="OS")
     partner_id = fields.Many2one(related="order_id.partner_id", string="Cliente", store=True)
     responsible_id = fields.Many2one("res.users", string="Responsável")
-    base_amount = fields.Monetary("Valor Total")
-    commission = fields.Monetary("Comissão")
+
+    currency_id = fields.Many2one(
+        "res.currency",
+        default=lambda self: self.env.company.currency_id.id,
+        string="Moeda",
+    )
+    base_amount = fields.Monetary("Valor Total", currency_field="currency_id")
+    commission  = fields.Monetary("Comissão",    currency_field="currency_id")
+
     date_out = fields.Date("Data de Saída")
-    currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id.id)
