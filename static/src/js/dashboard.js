@@ -63,7 +63,23 @@ class AssistecDashboard extends Component {
     onWillUnmount(()=>{ if (this._onResize) window.removeEventListener("resize", this._onResize); if (this._chart){try{this._chart.destroy();}catch{}} });
   }
 
-  openAction(xmlid, domain=[]) { this.action.doAction(xmlid, { domain }); }
+  async openAction(_xmlid, domain = []) {
+    // Abre a lista de OS com o domínio recebido (sem depender de xmlid)
+    const act = {
+      type: "ir.actions.act_window",
+      name: "Ordens de Serviço",
+      res_model: "assistec.order",
+      // lista primeiro, depois form (padrão seguro no Odoo 18)
+      views: [[false, "list"], [false, "form"]],
+      target: "current",
+      context: {},                 // garante que existe context
+      domain: domain || [],        // injeta o filtro do card
+    };
+    return this.action.doAction(act);
+  }
+
+
+
   openOrder(orderId) {
     this.action.doAction({ type:"ir.actions.act_window", res_model:"assistec.order", res_id:orderId, views:[[false,"form"]], target:"current" });
   }

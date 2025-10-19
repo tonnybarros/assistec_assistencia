@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <!-- ===== HERANÇA: Oculta header/footer se hide_header/hide_footer definidos -->
+  <!-- Herança: esconder header/footer quando pedido -->
   <template id="website_layout_no_header_footer" inherit_id="website.layout">
     <xpath expr="//header" position="attributes">
       <attribute name="t-if">not hide_header</attribute>
     </xpath>
     <xpath expr="//footer" position="attributes">
       <attribute name="t-if">not hide_footer</attribute>
-    </xpath> 
+    </xpath>
   </template>
 
   <!-- ================= TEMPLATE: FORMULÁRIO ================= -->
   <template id="os_status_form" name="Consulta de OS">
+    <t t-set="title">Consulta de OS</t>
+    <t t-set="website_meta_title" t-value="'Consulta de OS'"/>
     <t t-call="website.layout">
       <t t-set="hide_header" t-value="True"/>
       <t t-set="hide_footer" t-value="True"/>
@@ -51,6 +53,8 @@
 
   <!-- ================= TEMPLATE: RESULTADO ================= -->
   <template id="os_status_result" name="Resultado Consulta OS">
+    <t t-set="title" t-value="'Resultado da Consulta de OS | %s' % ((order and order.name) or '—')"/>
+    <t t-set="website_meta_title" t-value="'Resultado da Consulta de OS | %s' % ((order and order.name) or '—')"/>
     <t t-call="website.layout">
       <t t-set="hide_header" t-value="True"/>
       <t t-set="hide_footer" t-value="True"/>
@@ -66,92 +70,196 @@
                 <div class="alert alert-danger mb-4" t-esc="err"/>
               </t>
             </t>
-            <!-- TOAST de sucesso -->
+
+            <!-- toast de sucesso -->
             <t t-if="success">
-            <style>
-              .toast-lite-wrap{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1080}
-              .toast-lite{background:#198754;color:#fff;border-radius:.5rem;padding:.75rem 1rem;box-shadow:0 6px 20px rgba(0,0,0,.15);opacity:0;transition:opacity .25s ease, transform .25s ease;transform:translateY(-6px)}
-              .toast-lite.show{opacity:1;transform:translateY(0)}
-              .toast-lite .close{background:transparent;border:0;color:#fff;font-size:1.25rem;line-height:1;padding:0 .25rem;margin-left:.5rem;cursor:pointer}
-            </style>
+              <style>
+                .toast-lite-wrap{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:1080}
+                .toast-lite{background:#198754;color:#fff;border-radius:.5rem;padding:.75rem 1rem;box-shadow:0 6px 20px rgba(0,0,0,.15);opacity:0;transition:opacity .25s ease, transform .25s ease;transform:translateY(-6px)}
+                .toast-lite.show{opacity:1;transform:translateY(0)}
+                .toast-lite .close{background:transparent;border:0;color:#fff;font-size:1.25rem;line-height:1;padding:0 .25rem;margin-left:.5rem;cursor:pointer}
+              </style>
 
-            <div id="assistecToastWrap" class="toast-lite-wrap">
-              <div id="assistecToast" class="toast-lite" role="status" aria-live="polite">
-                <span><t t-esc="success"/></span>
-                <button class="close" aria-label="Fechar" onclick="(function(b){b.parentNode.removeChild(b.parentNode)})(this)">×</button>
+              <div id="assistecToastWrap" class="toast-lite-wrap">
+                <div id="assistecToast" class="toast-lite" role="status" aria-live="polite">
+                  <span><t t-esc="success"/></span>
+                  <button class="close" aria-label="Fechar" onclick="(function(b){b.parentNode.removeChild(b.parentNode)})(this)">×</button>
+                </div>
               </div>
-            </div>
 
-            <script>
-              <![CDATA[
-                (function () {
-                  var el = document.getElementById('assistecToast');
-                  if (!el) return;
-                  // mostra
-                  requestAnimationFrame(function(){ el.classList.add('show'); });
-                  // auto-hide após 4s
-                  setTimeout(function(){
-                    el.classList.remove('show');
+              <script>
+                <![CDATA[
+                  (function () {
+                    var el = document.getElementById('assistecToast');
+                    if (!el) return;
+                    requestAnimationFrame(function(){ el.classList.add('show'); });
                     setTimeout(function(){
-                      var w = document.getElementById('assistecToastWrap');
-                      if (w && w.parentNode) w.parentNode.removeChild(w);
-                    }, 300);
-                  }, 4000);
-                })();
-              ]]>
-            </script>
-          </t>
+                      el.classList.remove('show');
+                      setTimeout(function(){
+                        var w = document.getElementById('assistecToastWrap');
+                        if (w && w.parentNode) w.parentNode.removeChild(w);
+                      }, 300);
+                    }, 4000);
+                  })();
+                  (function () {
+                    var els = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                    if (!els.length || !window.bootstrap) return;
+                    els.forEach(function (el) {
+                      try { new bootstrap.Tooltip(el); } catch (e) {}
+                    });
+                  })();
+                ]]>
+              </script>
+            </t>
 
             <!-- resultado -->
             <t t-if="order">
               <div class="p-4 bg-white rounded shadow-sm">
                 <!-- Cabeçalho OS -->
-                <h2 class="mb-2 text-success">
-                  OS <span t-esc="order.name"/> 
-                  <br/><span t-esc="order.stage_id.name"/>
+                <h2 class="mb-2 text-success d-flex flex-column">
+                  <span>
+                    OS <span id="assistecOsNumber" t-esc="order.name"/>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary ms-2"
+                            style="vertical-align: middle"
+                            aria-label="Copiar número da OS"
+                            onclick="(function(){
+                              var el=document.getElementById('assistecOsNumber');
+                              if (el &amp;&amp; navigator.clipboard){ navigator.clipboard.writeText(el.textContent.trim()); }
+                              var b=event.currentTarget;b.textContent='Copiado!';setTimeout(function(){b.textContent='Copiar nº';},1200);
+                            })()">
+                      Copiar nº
+                    </button>
+                  </span>
+                  <span class="fw-normal" t-esc="order.stage_id.name"/>
                 </h2>
+
                 <p class="mb-3 text-muted">
                   Acompanhe aqui o andamento da sua ordem de serviço. Em caso de dúvidas, fale conosco!
                 </p>
 
-                <!-- Fluxo/etapas -->
-                <div class="mb-4">
-                  <ol class="list-unstyled d-flex flex-row flex-wrap gap-3">
-                    <li>
-                      <span class="badge rounded-pill bg-primary">Entrada</span><br/>
-                      <small>
-                        <t t-if="order.date_in">
-                          <span t-field="order.date_in"
-                                t-options="{'widget':'date','format':'dd/MM/yyyy'}"/>
-                        </t>
-                        <t t-else="">—</t>
-                      </small>
-                    </li>
-                    <li>
-                      <span class="badge rounded-pill bg-info">Status atual</span><br/>
-                      <small><span t-esc="order.stage_id.name"/></small>
-                    </li>
-                    <li>
-                      <span class="badge rounded-pill bg-warning">Previsão</span><br/>
-                      <small>
-                        <t t-if="order.delivery_date">
-                          <span t-field="order.delivery_date"
-                                t-options="{'widget':'date','format':'dd/MM/yyyy'}"/>
-                        </t>
-                        <t t-else="">—</t>
-                      </small>
-                    </li>
-                    <t t-if="order.date_out">
-                      <li>
-                        <span class="badge rounded-pill bg-success">Finalizado</span><br/>
-                        <small>
-                          <span t-field="order.date_out"
-                                t-options="{'widget':'date','format':'dd/MM/yyyy'}"/>
-                        </small>
-                      </li>
-                    </t>
-                  </ol>
+                <!-- ===== Termômetro de andamento (server-side) ===== -->
+                <!-- ===== Termômetro de andamento (versão simples/segura) ===== -->
+                <t t-set="stage_code" t-value="(order.stage_id.code or '').lower()"/>
+                <t t-set="mapping" t-value="{
+                  'nao_autorizado': 10,
+                  'orcamento': 25,
+                  'enviado': 40,
+                  'autorizado': 60,
+                  'aguardando_peca': 70,
+                  'aguardando_reparo': 80,
+                  'aguardando_retirada': 95
+                }"/>
+                <!-- pega do mapa; se não achar, usa 15 -->
+                <t t-set="tmp_progress" t-value="mapping.get(stage_code)"/>
+                <!-- se estiver fechado, força 100; senão usa tmp_progress (ou 15 se None) -->
+                <t t-set="progress_val" t-value="100 if (order.stage_id and order.stage_id.mark_closed) else (tmp_progress if (tmp_progress is not None) else 15)"/>
+
+                <style>
+                  .progress{background:#eef3ef;}
+                  .progress-bar{transition:width .4s ease;}
+                </style>
+                <div class="progress mb-3" style="height:10px;">
+                  <div id="assistecProgressBar"
+                      class="progress-bar bg-success"
+                      role="progressbar"
+                      t-att-data-progress="progress_val"
+                      aria-valuemin="0" aria-valuemax="100">
+                  </div>
                 </div>
+                <small class="text-muted d-block mb-3">
+                  Progresso estimado: <t t-esc="progress_val"/>%
+                </small>
+
+                <script>
+                  <![CDATA[
+                  (function () {
+                    var el = document.getElementById('assistecProgressBar');
+                    if (!el) return;
+                    var raw = el.getAttribute('data-progress') || '0';
+                    var v = parseInt(raw, 10);
+                    if (isNaN(v)) v = 0;
+                    if (v < 0) v = 0;
+                    if (v > 100) v = 100;
+                    el.style.width = v + '%';
+                    el.setAttribute('aria-valuenow', v);
+                  })();
+                  ]]>
+                </script>
+                <!-- ===== /Termômetro ===== -->
+
+                <style>
+                  .status-grid{display:flex;flex-wrap:wrap;gap:12px}
+                  .status-card{background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:12px 16px;min-width:220px}
+                  .status-card .title{font-weight:600;color:#6c757d;margin-bottom:4px}
+                  .status-card .value{font-weight:700;font-size:1.05rem}
+
+                  .status-card.success{background:#eaf7ee;border-color:#cfe8d8}
+                  .status-card.warning{background:#fff7e6;border-color:#ffe3ab}
+                  .status-card.info{background:#eaf5ff;border-color:#cfe5ff}
+                  .status-card.primary{background:#eef2ff;border-color:#d7ddff}
+                  .status-card.danger{background:#ffecec;border-color:#ffd0d0}
+                  .status-card.muted{background:#f4f5f7;border-color:#e6e8eb}
+                </style>
+
+                <!-- ===== /Cards de status ===== -->
+
+                <!-- ===== /Termômetro ===== -->
+
+                <!-- ===== Cards coloridos ===== -->
+                <t t-set="stage_card_class" t-value="{
+                   'orcamento':'info',
+                   'autorizado':'success',
+                   'aguardando_peca':'warning',
+                   'aguardando_reparo':'info',
+                   'enviado':'primary',
+                   'nao_autorizado':'danger',
+                   'aguardando_retirada':'success'
+                }.get(stage_code, 'muted')"/>
+
+                <div class="d-flex flex-wrap status-grid position-relative mb-4">
+                  <div class="status-card muted">
+                    <div class="title mb-1">Entrada</div>
+                    <div class="value">
+                      <t t-if="order.date_in">
+                        <span t-field="order.date_in" t-options="{'widget':'date','format':'dd/MM/yyyy'}"/>
+                      </t><t t-else="">—</t>
+                    </div>
+                  </div>
+
+                  <div t-attf-class="status-card #{stage_card_class}">
+                    <div class="title mb-1">Status atual</div>
+                    <div class="value" t-esc="order.stage_id.name"/>
+                  </div>
+
+                  <div class="status-card warning">
+                    <div class="title mb-1">
+                      Previsão
+                      <i class="fa fa-info-circle ms-1"
+                         data-bs-toggle="tooltip"
+                         t-att-title="request.env._('Prazo estimado. Pode ser alterado caso seja necessário aguardar peças originais, prazos de fornecedores ou alta demanda. Avisaremos em caso de mudança.')"/>
+                    </div>
+                    <div class="value">
+                      <t t-if="order.delivery_date">
+                        <span t-field="order.delivery_date" t-options="{'widget':'date','format':'dd/MM/yyyy'}"/>
+                      </t><t t-else="">—</t>
+                    </div>
+                  </div>
+
+                  <div class="status-card info">
+                    <div class="title mb-1">Última atualização</div>
+                    <div class="value">
+                      <t t-if="order.write_date">
+                        <span t-field="order.write_date" t-options="{'widget':'datetime','format':'dd/MM/yyyy'}"/>
+                      </t>
+                      <t t-elif="order.create_date">
+                        <span t-field="order.create_date" t-options="{'widget':'datetime','format':'dd/MM/yyyy'}"/>
+                      </t>
+                      <t t-else="">—</t>
+                    </div>
+                  </div>
+                </div>
+                <!-- ===== /Cards coloridos ===== -->
 
                 <!-- Dados do Aparelho/OS -->
                 <div class="mb-3">
@@ -180,89 +288,133 @@
                         t-field="order.amount_total"
                         t-options="{'widget':'monetary','display_currency': order.currency_id}"/>
                   <t t-if="order.amount_discount and order.amount_discount &gt; 0">
-                    <span class="ms-2 text-danger small">
-                      (Descontos aplicados!)
-                    </span>
+                    <span class="ms-2 text-danger small">(Descontos aplicados!)</span>
                   </t>
                 </div>
 
-                <!-- BOTÕES DE DECISÃO (aparecem só com valor > 0) -->
-                <t t-if="token
-                         and order.amount_total and order.amount_total &gt; 0
-                         and order.stage_id.code not in ['autorizado','nao_autorizado']">
+                <!-- Decisão com confirmação em modal -->
+                <t t-if="token and order.amount_total and order.amount_total &gt; 0 and order.stage_id.code not in ['autorizado','nao_autorizado']">
                   <div class="mb-4">
-                    <!-- Aprovar -->
-                    <form t-att-action="'/os/%s/approve' % token"
-                          method="post" style="display:inline;">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <button class="btn btn-success me-2">✅ Autorizo</button>
-                    </form>
-
-                    <!-- Reprovar -->
-                    <form t-att-action="'/os/%s/reject' % token"
-                          method="post" style="display:inline;">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <button class="btn btn-danger">❌ Não autorizo</button>
-                    </form>
+                    <button class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#modalApprove">
+                      ✅ Autorizar orçamento
+                    </button>
+                    <button class="btn btn-link text-danger p-0 align-baseline" data-bs-toggle="modal" data-bs-target="#modalReject">
+                      ❌ Não autorizar
+                    </button>
                   </div>
                 </t>
                 <t t-elif="order.stage_id.code == 'autorizado'">
-                  <div class="alert alert-success mb-4">
-                    Você já autorizou o orçamento. Obrigado!
+                  <div class="alert alert-success mb-3">
+                    Você já autorizou o orçamento. Para qualquer ajuste, fale com a loja.
                   </div>
                 </t>
                 <t t-elif="order.stage_id.code == 'nao_autorizado'">
-                  <div class="alert alert-danger mb-4">
-                    Você indicou que não autoriza o orçamento.
+                  <div class="alert alert-danger mb-3">
+                    Você indicou que <b>não autoriza</b> o orçamento.
                   </div>
                 </t>
 
-                <!-- Serviços, informal -->
-                <div class="mb-3">
-                  <strong>Serviços incluídos:</strong>
-                  <ul class="list-group list-group-flush">
-                    <t t-if="order.line_ids">
-                      <t t-foreach="order.line_ids" t-as="l">
-                        <li class="list-group-item px-0">
-                          <b><t t-esc="l.service_id.display_name"/></b>
-                          <t t-if="l.description">
-                            — <span t-esc="l.description"/>
+                <!-- Modais -->
+                <t t-if="token">
+                  <div class="modal fade" id="modalApprove" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Confirmar autorização</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                        </div>
+                        <div class="modal-body">
+                          <p>
+                            Confirmar a <b>autorização</b> da OS <b t-esc="order.name"/> pelo valor
+                            <b t-field="order.amount_total" t-options="{'widget':'monetary','display_currency': order.currency_id}"/>?
+                          </p>
+                          <p class="small text-muted mb-0">Você será avisado quando o serviço for concluído.</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                          <form t-att-action="'/os/%s/approve' % token" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-success">Confirmar</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal fade" id="modalReject" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Confirmar não autorização</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                        </div>
+                        <div class="modal-body">
+                          <p>
+                            Tem certeza de que <b>não autoriza</b> a execução do serviço da OS
+                            <b t-esc="order.name"/>?
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                          <form t-att-action="'/os/%s/reject' % token" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-danger">Confirmar</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+
+                <!-- Serviços (accordion) -->
+                <div class="accordion mb-3" id="svcAcc">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="svcHead">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#svcBody">
+                        Serviços incluídos
+                      </button>
+                    </h2>
+                    <div id="svcBody" class="accordion-collapse collapse" data-bs-parent="#svcAcc">
+                      <div class="accordion-body">
+                        <ul class="list-group list-group-flush">
+                          <t t-if="order.line_ids">
+                            <t t-foreach="order.line_ids" t-as="l">
+                              <li class="list-group-item px-0">
+                                <b><t t-esc="l.service_id.display_name"/></b>
+                                <t t-if="l.description"> — <span t-esc="l.description"/></t>
+                              </li>
+                            </t>
                           </t>
-                        </li>
-                      </t>
-                    </t>
-                    <t t-else="">
-                      <li class="list-group-item px-0 text-muted">
-                        Sem serviços cadastrados.
-                      </li>
-                    </t>
-                  </ul>
+                          <t t-else="">
+                            <li class="list-group-item px-0 text-muted">Sem serviços cadastrados.</li>
+                          </t>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Imagens anexadas -->
-                <!-- Anexos (imagens ou documentos) -->
+                <!-- Imagens / anexos -->
                 <t t-if="order.image_ids">
                   <div class="mb-4">
                     <strong>Arquivos anexados:</strong>
                     <div class="row g-2 mt-2">
                       <t t-foreach="order.image_ids" t-as="att">
-                        <!-- Imagem: thumbnail clicável -->
                         <t t-if="att.mimetype and att.mimetype.startswith('image/')">
                           <div class="col-4 col-md-3 col-lg-2">
                             <a t-att-href="'/web/image/%s' % att.id" target="_blank">
                               <img t-att-src="'/web/image/%s' % att.id"
-                                  class="img-fluid rounded border"
-                                  alt="Imagem anexada"
-                                  style="cursor: zoom-in;"/>
+                                   class="img-fluid rounded border"
+                                   alt="Imagem anexada"
+                                   style="cursor: zoom-in;"/>
                             </a>
                           </div>
                         </t>
-                        <!-- Documento: link para download/visualização -->
                         <t t-else="">
                           <div class="col-12">
                             <a t-att-href="'/web/content/%s?download=true' % att.id"
-                              target="_blank"
-                              class="btn btn-outline-secondary btn-sm">
+                               target="_blank"
+                               class="btn btn-outline-secondary btn-sm">
                               <i class="fa fa-paperclip me-1"></i>
                               <span t-esc="att.name or 'Download'"/>
                             </a>
@@ -281,20 +433,43 @@
                   </div>
                 </t>
 
-                <!-- Contato final -->
-<t t-set="empresa_whatsapp" t-value="(request.website.company_id.mobile or request.website.company_id.phone or '').replace('(', '').replace(')', '').replace('-', '').replace(' ', '')"/>
-<div class="mt-4 small text-muted">
-  Dúvidas? Fale conosco pelo
-  <t t-if="empresa_whatsapp and len(empresa_whatsapp) >= 10">
-    <a t-att-href="'https://wa.me/55%s' % empresa_whatsapp" target="_blank" class="fw-bold text-success" style="text-decoration:underline;">
-      WhatsApp
-    </a>
-    ou telefone cadastrado.
-  </t>
-  <t t-else="">
-    WhatsApp ou telefone cadastrado.
-  </t>
-</div>
+                <div class="small text-muted mt-2">
+                  * <t t-esc="request.env._('Prazo estimado. Pode ser ajustado se houver indisponibilidade de peças originais, prazos de fornecedores ou alta demanda. Qualquer alteração será comunicada.')"/>
+                </div>
+
+                <!-- Contato final + FAB WhatsApp -->
+                <t t-set="empresa_whatsapp_raw" t-value="(request.website.company_id.mobile or request.website.company_id.phone or '')"/>
+                <t t-set="empresa_whatsapp" t-value="empresa_whatsapp_raw.replace('(', '').replace(')', '').replace('-', '').replace(' ', '')"/>
+
+                <div class="mt-4 small text-muted">
+                  Dúvidas? Fale conosco pelo
+                  <t t-if="empresa_whatsapp and len(empresa_whatsapp) &gt;= 10">
+                    <a t-att-href="'https://wa.me/' + empresa_whatsapp.lstrip('+')"
+                       target="_blank" class="fw-bold text-success" style="text-decoration:underline;">
+                      WhatsApp
+                    </a>
+                    ou telefone cadastrado.
+                  </t>
+                  <t t-else="">WhatsApp ou telefone cadastrado.</t>
+                </div>
+
+                <t t-if="empresa_whatsapp and len(empresa_whatsapp) &gt;= 10">
+                  <a t-att-href="'https://wa.me/' + empresa_whatsapp.lstrip('+')"
+                     class="assistec-wa-fab" aria-label="Falar no WhatsApp" target="_blank">
+                    <i class="fa fa-whatsapp"></i>
+                  </a>
+                  <style>
+                    .assistec-wa-fab{
+                      position:fixed; right:16px; bottom:16px;
+                      width:56px; height:56px; border-radius:50%;
+                      background:#25D366; color:#fff; display:flex; align-items:center; justify-content:center;
+                      box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:1060;
+                    }
+                    .assistec-wa-fab i{ font-size:26px; line-height:1; }
+                    @media (min-width: 992px){ .assistec-wa-fab{ display:none; } }
+                  </style>
+                </t>
+
               </div>
             </t>
           </div>

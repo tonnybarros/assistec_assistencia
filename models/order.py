@@ -1320,6 +1320,12 @@ class AssistecOrder(models.Model):
             _logger.info("[WhatsApp] OS %s sem celular válido; pulando", order.name)
             return msg
 
+        # ➕ NOVO: dados do responsável
+        resp_partner = order.responsible_id.partner_id if order.responsible_id else False
+        resp_msisdn = _format_msisdn(
+            (resp_partner.mobile or resp_partner.phone) if resp_partner else None
+        )
+
         # 3) prepara o payload
         payload = {
             "os_number": order.name,
@@ -1329,6 +1335,11 @@ class AssistecOrder(models.Model):
             "author": msg.author_id.name,
             "message": tools.html2plaintext(msg.body), 
             "postos":       "assistec_chatter",
+
+            # ➕ NOVO: responsável
+            "responsible_id": order.responsible_id.id if order.responsible_id else False,
+            "responsible_name": order.responsible_id.name if order.responsible_id else False,
+            "responsible_msisdn": resp_msisdn,  # e164 tipo 55XXXXXXXXXXX (ou None)
         }
 
         # 4) pega URL do parâmetro do sistema

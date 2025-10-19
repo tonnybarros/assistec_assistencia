@@ -166,14 +166,24 @@ class AssistecDashboard(models.TransientModel):
             )
 
         # Payload final
+        ACTION_OS = "assistec_assistencia.action_assistec_order"  # opcional
+
         cards = [
-            {"key": "open", "label": "OS Abertas", "value": k_open},
-            {"key": "today", "label": "Hoje", "value": k_today},
-            {"key": "month", "label": "Neste mês", "value": k_month},
-            {"key": "due_today", "label": "Entregas hoje", "value": k_due_today},
-            {"key": "stalled_7d", "label": "Paradas (7+ dias)", "value": k_stalled_7d},
-            {"key": "without_budget", "label": "Sem orçamento", "value": k_without_budget},
+            {"key": "open", "label": "OS Abertas", "value": k_open,
+            "action_xmlid": ACTION_OS, "domain": dom_open},
+            {"key": "today", "label": "Hoje", "value": k_today,
+            "action_xmlid": ACTION_OS, "domain": between(dom_open, today, tomorrow)},
+            {"key": "month", "label": "Neste mês", "value": k_month,
+            "action_xmlid": ACTION_OS, "domain": between(dom_open, month_start, next_month)},
+            {"key": "due_today", "label": "Entregas hoje", "value": k_due_today,
+            "action_xmlid": ACTION_OS, "domain": dom_open + [("delivery_date", "=", today)]},
+            {"key": "stalled_7d", "label": "Paradas (7+ dias)", "value": k_stalled_7d,
+            "action_xmlid": ACTION_OS, "domain": dom_open + [("create_date", "<", seven_days_ago)]},
+            {"key": "without_budget", "label": "Sem orçamento", "value": k_without_budget,
+            "action_xmlid": ACTION_OS, "domain": dom_open + [("amount_total", "=", 0)]},
         ]
+
+
         kpis = {
             "top_resp": top_resp_vals,
             "avg_days_open": avg_days_open,

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-import json, logging
+import json, logging, re
 from datetime import date, datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DT_FMT
 
@@ -14,11 +14,10 @@ except Exception:
 
 
 # ═══════════════════════════════════════════════════════════════════
-# helpers
+# helpers (nível de módulo)
 # ═══════════════════════════════════════════════════════════════════
 def _as_bool(v):
     return str(v).lower() in ("1", "true", "t", "y", "yes", "on")
-
 
 def _dt_to_str(val):
     if isinstance(val, datetime):
@@ -26,6 +25,22 @@ def _dt_to_str(val):
     if isinstance(val, date):
         return val.isoformat()
     return val
+
+# Telefone → MSISDN BR (E.164-like)
+_PHONE_RE = re.compile(r"\D+")
+
+def _format_msisdn(raw):
+    """Converte '(11) 91234-5678' -> '5511912345678' ou False."""
+    if not raw:
+        return False
+    digits = _PHONE_RE.sub("", str(raw))
+    if len(digits) < 10:
+        return False
+    if digits.startswith("0"):
+        digits = digits[1:]
+    if not digits.startswith("55"):
+        digits = "55" + digits
+    return digits
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -40,10 +55,10 @@ class AssistecWebhookMixin(models.AbstractModel):
         ICP = self.env["ir.config_parameter"].sudo()
         get = ICP.get_param
         return {
-            "enabled":      _as_bool(get("assistec.webhook_enabled", "True")),
-            "url":          (get("assistec.webhook_url") or "").strip(),
-            "verify_ssl":   _as_bool(get("assistec.webhook_verify_ssl", "True")),
-            "on_create":    _as_bool(get("assistec.webhook_on_create", "True")),
+            "enabled":         _as_bool(get("assistec.webhook_enabled", "True")),
+            "url":             (get("assistec.webhook_url") or "").strip(),
+            "verify_ssl":      _as_bool(get("assistec.webhook_verify_ssl", "True")),
+            "on_create":       _as_bool(get("assistec.webhook_on_create", "True")),
             "on_state_change": _as_bool(get("assistec.webhook_on_state_change", "True")),
             "state_whitelist": [
                 s for s in (get("assistec.webhook_state_whitelist", "") or "")
@@ -112,6 +127,12 @@ class AssistecWebhookMixin(models.AbstractModel):
 
     def _export_order(self):
         self.ensure_one()
+
+        # ➕ responsável e celular normalizado
+        r = self.responsible_id
+        rp = r.partner_id if r else False
+        resp_msisdn = _format_msisdn((rp.mobile or rp.phone) if rp else None)
+
         return self._json_safe({
             "id": self.id,
             "name": self.name,
@@ -123,11 +144,22 @@ class AssistecWebhookMixin(models.AbstractModel):
                 "name": self.stage_id.display_name if self.stage_id else False,
             },
             "responsible": self.responsible_id.display_name if self.responsible_id else False,
+            "responsible_id": r.id if r else False,
+            "responsible_partner": ({
+                "id": rp.id,
+                "name": rp.display_name,
+                "mobile": rp.mobile,
+                "phone": rp.phone,
+                "email": rp.email,
+            } if rp else False),
+            "responsible_msisdn": resp_msisdn,
+
             "dates": {
                 "date_in": self.date_in,
                 "date_repaired": self.date_repaired,
                 "date_out": self.date_out,
                 "date_warranty": self.date_warranty,
+                "delivery_date": self.delivery_date,
             },
             "warranty": bool(self.warranty),
             "partner": self._export_partner(self.partner_id),
@@ -154,12 +186,11 @@ class AssistecWebhookMixin(models.AbstractModel):
         })
 
     # ---------------- Chatter + e-mail ------------
-    # --- dentro de AssistecWebhookMixin ------------------------------
     def _log_webhook(self, body):
         """Cartão notification; e-mail só ao responsável (se tiver e-mail)."""
         subtype = self.env["mail.message.subtype"].ensure_webhook_subtype()
         if subtype.internal:
-            subtype.internal = False           # permite e-mail
+            subtype.internal = False  # permite e-mail
 
         partner = self.responsible_id.partner_id
         recipients = [partner.id] if partner and partner.email else []
@@ -170,9 +201,9 @@ class AssistecWebhookMixin(models.AbstractModel):
             "message_type": "notification",
         }
         if recipients:
-            kw["partner_ids"] = recipients     # só adiciona se existir destino
+            kw["partner_ids"] = recipients
 
-        self.message_post(**kw)                # ❌  sem channel_ids
+        self.message_post(**kw)  # sem channel_ids
 
     # ---------------- Envio -----------------------
     def _send_webhook(self, event="event"):
@@ -185,24 +216,34 @@ class AssistecWebhookMixin(models.AbstractModel):
         if not (conf["enabled"] and conf["url"]):
             return False
 
-        # ----------------------------------------------------------
-        # NOVO: calcula (ou recalc) a URL curta via token
+        # URL pública (via token) se existir
         base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
         if hasattr(self, "access_token") and self.access_token:
             public_url = f"{base_url}/os/{self.access_token}"
         else:
             public_url = False
-        # ----------------------------------------------------------
+
+        notify_enabled = bool(getattr(self, "notify_customer", False))
 
         payload = {
             "event": event,
             "timestamp": _dt_to_str(fields.Datetime.now()),
             "model": self._name,
             "data": self._export_order(),
-            "public_url": public_url,          # ← link pronto para WhatsApp
+            "public_url": public_url,
+
+            # carimbos/flags
+            "source": "notify",
+            "notify": True,
+            "notify_customer": notify_enabled,
         }
-        headers = {"Content-Type": "application/json", "X-Assistec-Event": event}
-        headers.update(conf["headers"])
+        headers = {
+            "Content-Type": "application/json",
+            "X-Assistec-Event": event,
+            "X-Assistec-Source": "notify",
+            "X-Assistec-Notify": "1" if notify_enabled else "0",
+        }
+        headers.update(conf.get("headers", {}))
 
         ok = False
         try:
@@ -221,7 +262,6 @@ class AssistecWebhookMixin(models.AbstractModel):
                           (event, _("enviado") if ok else _("falhou")))
         return ok
 
-
     # ---------------- Fila ------------------------
     def _queue_webhook(self, event="event"):
         self.ensure_one()
@@ -239,7 +279,6 @@ class AssistecWebhookMixin(models.AbstractModel):
 class AssistecOrderWebhookExt(AssistecWebhookMixin, models.Model):
     _inherit = "assistec.order"
 
-    # ---- criação ----
     @api.model_create_multi
     def create(self, vals_list):
         recs = super().create(vals_list)
@@ -248,7 +287,6 @@ class AssistecOrderWebhookExt(AssistecWebhookMixin, models.Model):
                 r._queue_webhook("create")
         return recs
 
-    # ---- mudança de estágio ----
     def write(self, vals):
         prev = {r.id: r.stage_id.id for r in self}
         res = super().write(vals)
@@ -268,7 +306,6 @@ class AssistecOrderWebhookExt(AssistecWebhookMixin, models.Model):
             r._log_webhook(_('Webhook “%s” agendado.') % f"stage:{code}")
         return res
 
-    # ---- botão manual ----
     def action_send_webhook(self):
         conf = self.env["assistec.webhook.mixin"]._get_webhook_conf()
         if not (conf["enabled"] and conf["url"]):

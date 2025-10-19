@@ -37,7 +37,7 @@
               <t t-foreach="state.cards" t-as="card" t-key="card.key">
                 <div class="kpi-card"
                      t-attf-class="kpi-card kpi-{{ card.key }}"
-                     t-on-click="() => this.openAction(card.action, card.domain)">
+                     t-on-click="() => this.openAction(card.action_xmlid, card.domain)">
                   <span class="kpi-value"><t t-esc="card.value"/></span>
                   <span class="kpi-title"><t t-esc="card.label"/></span>
                 </div>
