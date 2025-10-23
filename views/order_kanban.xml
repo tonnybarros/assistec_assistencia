@@ -1,51 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_assistec_order_kanban" model="ir.ui.view">
-        <field name="name">assistec.order.kanban</field>
-        <field name="model">assistec.order</field>
-        <field name="arch" type="xml">
-            <kanban class="o_kanban_small_column"
-                    default_group_by="stage_id"
-                    quick_create="false">
 
-                <field name="name"/>
-                <field name="partner_id"/>
-                <field name="priority"/>
-                <field name="date_in"/>
-                <field name="stage_id"/>
-                <field name="kanban_cover_image"/>
+  <record id="view_assistec_order_kanban" model="ir.ui.view">
+    <field name="name">assistec.order.kanban</field>
+    <field name="model">assistec.order</field>
+    <field name="arch" type="xml">
+      <kanban class="assistec-kanban-compact o_kanban_small_column"
+              default_group_by="stage_id"
+              quick_create="false">
 
-                <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
-                            <t t-if="record.kanban_cover_image.value">
-                                <div class="o_kanban_image">
-                                    <img t-att-src="kanban_image('assistec.order', 'kanban_cover_image', record.id.value)"
-                                         alt="Foto do aparelho"
-                                         class="o_kanban_image_fill_left"/>
-                                </div>
-                            </t>
+        <!-- Campos usados no template -->
+        <field name="name"/>
+        <field name="stage_id"/>
+        <field name="stage_ui_class"/>
+        <field name="partner_id"/>
+        <field name="partner_mobile"/>
+        <field name="repair_product_id"/>
+        <field name="brand_id"/>
+        <field name="model"/>
+        <field name="date_in"/>
+        <field name="date_out"/>
+        <field name="delivery_date"/>
+        <field name="warranty"/>
+        <field name="amount_total"/>
+        <field name="amount_gross"/>
+        <field name="responsible_id"/>
+        <field name="priority"/>
+        <field name="kanban_cover_image"/>
 
-                            <div class="oe_kanban_details">
-                                <strong class="o_kanban_record_title">
-                                    <span><t t-esc="record.name.value"/></span>
-                                </strong>
-                                <div class="text-muted o_kanban_record_subtitle" t-if="record.partner_id.value">
-                                   <t t-esc="record.partner_id.value"/>
-                                </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <field name="priority" widget="priority"/>
-                                    </div>
-                                    <div class="oe_kanban_bottom_right">
-                                        <field name="stage_id"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
+        <templates>
+          <t t-name="kanban-box">
+            <div t-attf-class="o_kanban_record assistec-card ui-{{ record.stage_ui_class.raw_value or 'secondary' }} oe_kanban_global_click">
+
+              <!-- Thumb opcional (sua imagem de capa) -->
+              <t t-if="record.kanban_cover_image.value">
+                <div class="assistec-thumb">
+                  <img t-att-src="kanban_image('assistec.order','kanban_cover_image', record.id.value)"
+                       alt="Foto"
+                       class="assistec-thumb__img"/>
+                </div>
+              </t>
+
+              <!-- Cabeçalho -->
+              <div class="assistec-card__head">
+                <div class="assistec-card__title">
+                  <span class="num">OS&nbsp;<t t-esc="record.name.value"/></span>
+                  <span class="badge"
+                        t-attf-class="badge-{{ record.stage_ui_class.raw_value or 'secondary' }}">
+                    <t t-esc="record.stage_id.value and record.stage_id.value[1]"/>
+                  </span>
+                </div>
+                <div class="assistec-card__actions">
+                  <field name="priority" widget="priority"/>
+                </div>
+              </div>
+
+              <!-- Corpo -->
+              <div class="assistec-card__body">
+                <div class="row">
+                  <div class="col">
+                    <div class="line">
+                      <i class="fa fa-user-o"></i>
+                      <span><t t-esc="record.partner_id.value and record.partner_id.value[1]"/></span>
+                    </div>
+                    <div class="line" t-if="record.partner_mobile.value">
+                      <i class="fa fa-phone"></i>
+                      <a t-attf-href="tel:{{ record.partner_mobile.value }}">
+                        <t t-esc="record.partner_mobile.value"/>
+                      </a>
+                    </div>
+                    <div class="line">
+                      <i class="fa fa-plug"></i>
+                      <span>
+                        <t t-esc="record.repair_product_id.value and record.repair_product_id.value[1]"/>
+                        <t t-if="record.brand_id.value"> • <t t-esc="record.brand_id.value[1]"/></t>
+                        <t t-if="record.model.value"> • <t t-esc="record.model.value"/></t>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col assistec-right">
+                    <div class="line">
+                      <i class="fa fa-calendar-o"></i>
+                      <span>Entrada: <t t-esc="record.date_in.value and format_date(record.date_in.value)"/></span>
+                    </div>
+                    <div class="line" t-if="record.delivery_date.value">
+                      <i class="fa fa-truck"></i>
+                      <span>Previsão: <t t-esc="format_date(record.delivery_date.value)"/></span>
+                    </div>
+                    <div class="line amount">
+                      <i class="fa fa-money"></i>
+                      <span t-esc="format_amount(record.amount_total.value, record.amount_total.data.display_currency)"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rodapé -->
+              <div class="assistec-card__foot">
+                <div class="resp">
+                  <field name="responsible_id" widget="many2one_avatar_user"/>
+                </div>
+                <div class="flags">
+                  <span class="tag" t-if="record.warranty.value">Em garantia</span>
+                </div>
+              </div>
+            </div>
+          </t>
+
+          <!-- CSS embutido (se preferir, mova para assets do módulo) -->
+          <t t-name="kanban-styles">
+            <style>
+              .assistec-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px;box-shadow:0 1px 2px rgba(0,0,0,.04);position:relative}
+              .assistec-thumb{position:absolute;right:10px;top:10px;width:56px;height:56px;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb}
+              .assistec-thumb__img{width:100%;height:100%;object-fit:cover}
+              .assistec-card__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding-right:64px}
+              .assistec-card__title .num{font-weight:700}
+              .assistec-card__title .badge{margin-left:6px;padding:.1rem .35rem;border-radius:6px;font-size:.75rem}
+              .badge-primary{background:#ede9fe;color:#5b21b6}
+              .badge-secondary{background:#f3f4f6;color:#374151}
+              .badge-info{background:#e0f2fe;color:#075985}
+              .badge-warning{background:#fff7ed;color:#b45309}
+              .badge-success{background:#ecfdf5;color:#047857}
+              .badge-danger{background:#fee2e2;color:#991b1b}
+              .assistec-card__body .row{display:flex;gap:10px}
+              .assistec-card__body .col{flex:1;min-width:0}
+              .assistec-right{text-align:right}
+              .line{display:flex;gap:6px;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+              .line i{opacity:.65}
+              .line.amount{font-weight:600}
+              .assistec-card__foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+              .tag{background:#f3f4f6;border-radius:999px;padding:.1rem .5rem;font-size:.75rem}
+              /* Mobile: empilha */
+              @media (max-width: 768px){
+                .assistec-card__head{padding-right:10px}
+                .assistec-right{text-align:left}
+                .assistec-card__body .row{flex-direction:column}
+                .assistec-thumb{position:static;width:100%;height:140px;margin-bottom:8px}
+                .assistec-card__head{margin-top:4px}
+              }
+            </style>
+          </t>
+        </templates>
+
+      </kanban>
+    </field>
+  </record>
+
 </odoo>
